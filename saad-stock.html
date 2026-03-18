@@ -1,0 +1,2493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Saad Stock — AI Stock Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET & ROOT ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --black:#05070d;
+  --dark:#0b0f1a;
+  --dark2:#111827;
+  --dark3:#1a2235;
+  --dark4:#223047;
+  --blue:#3b82f6;
+  --blue2:#60a5fa;
+  --blue3:#93c5fd;
+  --blue-dim:rgba(59,130,246,0.12);
+  --blue-glow:rgba(59,130,246,0.25);
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.12);
+  --border3:rgba(59,130,246,0.3);
+  --text:#f1f5f9;
+  --text2:#94a3b8;
+  --text3:#475569;
+  --green:#22c55e;
+  --green-dim:rgba(34,197,94,0.1);
+  --red:#ef4444;
+  --red-dim:rgba(239,68,68,0.1);
+  --amber:#f59e0b;
+  --amber-dim:rgba(245,158,11,0.1);
+  --r:10px;
+  --r-lg:14px;
+  --r-xl:20px;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--text);font-family:'Inter',sans-serif;font-size:15px;line-height:1.65;min-height:100vh;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:var(--dark4);border-radius:4px;}
+a{color:var(--blue2);text-decoration:none;}
+a:hover{color:var(--blue3);}
+
+/* ── VIEWS ── */
+.view{display:none;}
+.view.active{display:block;}
+
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:300;
+  background:rgba(5,7,13,0.92);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:10px;
+  cursor:pointer;
+  font-size:18px;font-weight:800;color:var(--text);
+  letter-spacing:-0.5px;
+}
+.nav-logo-icon{
+  width:32px;height:32px;
+  background:var(--blue);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;
+  box-shadow:0 0 16px var(--blue-glow);
+}
+.nav-logo span{color:var(--blue2);}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.nav-key-status{
+  font-size:12px;color:var(--text3);
+  display:flex;align-items:center;gap:5px;
+}
+.key-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);}
+.key-dot.ok{background:var(--green);box-shadow:0 0 6px var(--green);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:9px 18px;
+  border-radius:var(--r);
+  font-size:13.5px;font-weight:600;
+  font-family:'Inter',sans-serif;
+  cursor:pointer;border:none;
+  transition:all 0.15s;white-space:nowrap;
+}
+.btn-blue{background:var(--blue);color:#fff;box-shadow:0 0 20px var(--blue-glow);}
+.btn-blue:hover{background:#2563eb;transform:translateY(-1px);}
+.btn-blue:disabled{background:var(--dark3);color:var(--text3);box-shadow:none;cursor:not-allowed;transform:none;}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2);}
+.btn-ghost:hover{background:var(--dark2);color:var(--text);}
+.btn-dark{background:var(--dark3);color:var(--text);border:1px solid var(--border2);}
+.btn-dark:hover{background:var(--dark4);border-color:var(--border3);}
+.btn-green{background:rgba(34,197,94,0.15);color:var(--green);border:1px solid rgba(34,197,94,0.25);}
+.btn-green:hover{background:rgba(34,197,94,0.25);}
+.btn-sm{padding:6px 13px;font-size:12.5px;}
+.btn-lg{padding:13px 28px;font-size:15px;}
+.btn-full{width:100%;}
+.btn-back{
+  display:flex;align-items:center;gap:7px;
+  background:none;border:none;
+  color:var(--text2);font-size:14px;font-weight:500;
+  cursor:pointer;padding:6px 10px;border-radius:var(--r);
+  font-family:'Inter',sans-serif;
+  transition:all 0.12s;
+}
+.btn-back:hover{background:var(--dark2);color:var(--text);}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   HOME VIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.home-wrap{max-width:960px;margin:0 auto;padding:60px 24px 80px;}
+
+.home-hero{text-align:center;margin-bottom:60px;}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--blue-dim);
+  border:1px solid var(--border3);
+  color:var(--blue2);
+  font-size:12.5px;font-weight:500;
+  padding:6px 16px;border-radius:40px;
+  margin-bottom:24px;
+}
+.badge-pulse{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 6px var(--blue);}50%{opacity:0.6;box-shadow:0 0 14px var(--blue-glow);}}
+.home-title{
+  font-size:clamp(32px,5vw,52px);
+  font-weight:800;color:var(--text);
+  letter-spacing:-1.5px;line-height:1.12;
+  margin-bottom:16px;
+}
+.home-title .hl{color:var(--blue2);}
+.home-sub{
+  font-size:17px;color:var(--text2);
+  max-width:500px;margin:0 auto 32px;
+  font-weight:400;line-height:1.6;
+}
+
+/* API KEY SETUP */
+.api-setup{
+  max-width:480px;margin:0 auto 52px;
+  background:var(--dark2);
+  border:1px solid var(--border2);
+  border-radius:var(--r-lg);
+  padding:20px;
+}
+.api-setup-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.api-setup-hint{font-size:12px;color:var(--text3);margin-bottom:14px;}
+.api-row{display:flex;gap:8px;}
+.api-inp{
+  flex:1;background:var(--dark3);
+  border:1px solid var(--border2);
+  border-radius:var(--r);
+  padding:9px 13px;
+  color:var(--text);font-size:13px;
+  font-family:'Inter',sans-serif;outline:none;
+  transition:border 0.15s;
+}
+.api-inp:focus{border-color:var(--blue);}
+.api-inp::placeholder{color:var(--text3);}
+.api-saved{font-size:12px;color:var(--green);margin-top:8px;display:none;}
+.api-saved.show{display:block;}
+
+/* TOOLS GRID */
+.tools-label{
+  font-size:11px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--text3);
+  text-align:center;margin-bottom:18px;
+}
+.tools-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+.tool-card{
+  background:var(--dark2);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  padding:26px 22px;
+  cursor:pointer;
+  transition:all 0.2s;
+  position:relative;overflow:hidden;
+}
+.tool-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--blue);opacity:0;transition:opacity 0.2s;
+}
+.tool-card:hover{
+  border-color:var(--border3);
+  transform:translateY(-3px);
+  box-shadow:0 8px 32px rgba(0,0,0,0.3);
+}
+.tool-card:hover::before{opacity:1;}
+.tc-icon{
+  width:48px;height:48px;
+  background:var(--blue-dim);
+  border:1px solid var(--border3);
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:16px;
+}
+.tc-name{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:-0.3px;}
+.tc-desc{font-size:13px;color:var(--text2);line-height:1.55;margin-bottom:14px;}
+.tc-go{
+  font-size:12.5px;font-weight:600;color:var(--blue2);
+  display:flex;align-items:center;gap:5px;
+  transition:gap 0.15s;
+}
+.tool-card:hover .tc-go{gap:9px;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   INNER VIEW SHELL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.inner-nav{
+  background:var(--dark2);
+  border-bottom:1px solid var(--border);
+  padding:12px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:60px;z-index:200;
+}
+.inner-nav-left{display:flex;align-items:center;gap:12px;}
+.inner-nav-title{font-size:15px;font-weight:700;color:var(--text);}
+.inner-body{max-width:960px;margin:0 auto;padding:28px 24px 80px;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SHARED CARD / FORM COMPONENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.card{
+  background:var(--dark2);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:22px;margin-bottom:16px;
+}
+.card-title{
+  font-size:14px;font-weight:700;color:var(--text);
+  margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+}
+.divider{height:1px;background:var(--border);margin:18px 0;}
+.notice{
+  background:var(--blue-dim);border:1px solid rgba(59,130,246,0.2);
+  border-radius:var(--r);padding:12px 15px;
+  font-size:13px;color:var(--blue2);margin-bottom:18px;line-height:1.55;
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.tag{display:inline-flex;font-size:11.5px;padding:3px 9px;border-radius:20px;font-weight:500;}
+.tag-blue{background:var(--blue-dim);color:var(--blue2);}
+.tag-green{background:var(--green-dim);color:var(--green);}
+.tag-amber{background:var(--amber-dim);color:var(--amber);}
+.tag-red{background:var(--red-dim);color:var(--red);}
+.loading-row{display:flex;align-items:center;gap:12px;padding:24px 0;color:var(--text2);font-size:14px;}
+.spinner{width:17px;height:17px;border:2px solid var(--border2);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite;display:inline-block;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.form-label{display:block;font-size:11.5px;font-weight:600;color:var(--text2);margin-bottom:7px;letter-spacing:0.3px;}
+.form-inp,.form-sel,.form-ta{
+  width:100%;background:var(--dark3);
+  border:1px solid var(--border2);
+  border-radius:var(--r);
+  padding:9px 13px;color:var(--text);
+  font-size:13.5px;font-family:'Inter',sans-serif;
+  outline:none;transition:border 0.15s;
+}
+.form-inp:focus,.form-sel:focus,.form-ta:focus{border-color:var(--blue);}
+.form-inp::placeholder,.form-ta::placeholder{color:var(--text3);}
+.form-sel option{background:var(--dark3);}
+.form-ta{resize:vertical;min-height:80px;line-height:1.6;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   DESIGN SUGGESTIONS VIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.sug-card{
+  background:var(--dark2);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:20px;margin-bottom:12px;
+  transition:border-color 0.15s,transform 0.15s;
+}
+.sug-card:hover{border-color:var(--border2);transform:translateX(2px);}
+.sug-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.sug-num{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1px;}
+.sug-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;letter-spacing:-0.3px;}
+.sug-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px;}
+.sug-why{
+  font-size:12px;color:var(--text3);
+  font-style:italic;margin-bottom:12px;
+  padding:8px 12px;background:var(--dark3);
+  border-radius:6px;border-left:2px solid var(--blue);
+}
+.sug-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.sug-tag{font-size:11.5px;padding:3px 8px;background:var(--dark3);border:1px solid var(--border);border-radius:6px;color:var(--text3);}
+.sug-footer{display:flex;justify-content:flex-end;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TREND TRACKER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.trend-row{
+  display:flex;align-items:center;gap:14px;
+  padding:13px 0;border-bottom:1px solid var(--border);
+}
+.trend-row:last-child{border-bottom:none;}
+.trend-rank{font-size:20px;font-weight:800;color:var(--dark4);width:30px;flex-shrink:0;}
+.trend-info{flex:1;}
+.trend-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.trend-meta{font-size:12px;color:var(--text3);}
+.trend-bar-wrap{width:90px;height:4px;background:var(--dark4);border-radius:2px;flex-shrink:0;}
+.trend-bar{height:100%;border-radius:2px;background:var(--blue);}
+.pill{display:inline-flex;font-size:11.5px;padding:3px 9px;border-radius:20px;border:1px solid var(--border);background:var(--dark3);color:var(--text2);}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MARKET GAP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.gap-item{
+  background:var(--dark3);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px;margin-bottom:10px;
+}
+.gap-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.gap-name{font-size:14px;font-weight:600;color:var(--text);}
+.gap-score{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;}
+.gs-hot{background:var(--red-dim);color:var(--red);}
+.gs-mid{background:var(--amber-dim);color:var(--amber);}
+.gs-low{background:var(--green-dim);color:var(--green);}
+.gap-desc{font-size:13px;color:var(--text2);margin-bottom:8px;}
+.gap-examples{display:flex;gap:5px;flex-wrap:wrap;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   EVENT CALENDAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.cal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.cal-item{
+  background:var(--dark3);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px;
+  border-left:3px solid var(--blue);
+}
+.cal-date{font-size:10.5px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.cal-event{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.cal-tip{font-size:12px;color:var(--text2);margin-bottom:8px;}
+.urg{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.urg-now{background:var(--red-dim);color:var(--red);}
+.urg-soon{background:var(--amber-dim);color:var(--amber);}
+.urg-plan{background:var(--blue-dim);color:var(--blue2);}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SOCIAL INSIGHTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.social-card{
+  background:var(--dark3);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:16px;
+}
+.social-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.social-icon{font-size:18px;}
+.social-name{font-size:13px;font-weight:600;color:var(--text);}
+.social-item{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 0;border-bottom:1px solid var(--border);
+  font-size:12.5px;color:var(--text2);
+}
+.social-item:last-child{border-bottom:none;}
+.si-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);flex-shrink:0;}
+.social-opp{margin-top:10px;padding:8px 10px;background:var(--blue-dim);border-radius:6px;font-size:12px;color:var(--blue2);}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MENTOR TABS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.tabs{display:flex;gap:2px;background:var(--dark3);border-radius:10px;padding:4px;margin-bottom:20px;}
+.tab-btn{
+  flex:1;padding:8px 10px;text-align:center;font-size:13px;
+  border-radius:7px;cursor:pointer;color:var(--text2);
+  transition:all 0.15s;font-weight:500;background:none;border:none;
+  font-family:'Inter',sans-serif;
+}
+.tab-btn.active{background:var(--dark2);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.4);}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+.mentor-q{
+  font-size:14px;font-weight:600;color:var(--text);
+  padding-left:12px;margin-bottom:8px;
+  border-left:2px solid var(--blue);
+}
+.mentor-a{font-size:13.5px;color:var(--text2);line-height:1.75;padding-left:12px;margin-bottom:18px;}
+.mentor-a ul{padding-left:18px;margin-top:6px;}
+.mentor-a li{margin-bottom:5px;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   AI PROMPT GENERATOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.step-wrap{display:flex;align-items:center;gap:0;margin-bottom:28px;}
+.step-circle{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;
+  border:2px solid var(--border2);color:var(--text3);
+  flex-shrink:0;transition:all 0.25s;
+}
+.step-circle.s-active{border-color:var(--blue);color:var(--blue);background:var(--blue-dim);}
+.step-circle.s-done{border-color:var(--green);color:var(--green);background:var(--green-dim);}
+.step-line{flex:1;height:2px;background:var(--border);margin:0 8px;transition:background 0.25s;}
+.step-line.done{background:var(--green);}
+.step-lbl{font-size:11px;color:var(--text3);margin-top:5px;text-align:center;}
+.pg-step{display:none;}
+.pg-step.active{display:block;}
+.format-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0;}
+.fmt-card{
+  background:var(--dark3);border:2px solid var(--border);
+  border-radius:var(--r-lg);padding:18px 12px;
+  text-align:center;cursor:pointer;transition:all 0.18s;
+}
+.fmt-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.fmt-card.sel{border-color:var(--blue);background:var(--blue-dim);}
+.fmt-icon{font-size:26px;margin-bottom:9px;}
+.fmt-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.fmt-desc{font-size:11px;color:var(--text3);line-height:1.5;}
+.design-pick{
+  background:var(--dark3);border:2px solid var(--border);
+  border-radius:var(--r-lg);padding:15px;
+  cursor:pointer;margin-bottom:9px;
+  display:flex;gap:12px;align-items:flex-start;
+  transition:all 0.15s;
+}
+.design-pick:hover{border-color:var(--border2);}
+.design-pick.sel{border-color:var(--blue);background:var(--blue-dim);}
+.dp-num{font-size:20px;font-weight:800;color:var(--dark4);width:28px;flex-shrink:0;}
+.dp-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.dp-desc{font-size:12.5px;color:var(--text2);}
+.prompt-box{
+  background:var(--dark3);border:1px solid var(--border2);
+  border-radius:var(--r-lg);padding:20px;position:relative;
+  margin-bottom:14px;
+}
+.prompt-box-label{font-size:10.5px;font-weight:700;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+.prompt-box-text{font-size:13.5px;color:var(--text);line-height:1.8;white-space:pre-wrap;}
+.copy-btn{
+  position:absolute;top:14px;right:14px;
+  background:var(--dark4);border:1px solid var(--border2);
+  border-radius:6px;padding:5px 12px;
+  font-size:12px;color:var(--text2);cursor:pointer;
+  font-family:'Inter',sans-serif;transition:all 0.15s;
+}
+.copy-btn:hover{border-color:var(--blue);color:var(--blue2);}
+.tool-chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;}
+.tool-chip{font-size:12px;padding:4px 11px;background:var(--blue-dim);border:1px solid rgba(59,130,246,0.2);border-radius:20px;color:var(--blue2);}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   METADATA GENERATOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.meta-layout{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start;}
+.upload-zone{
+  border:2px dashed var(--border2);border-radius:var(--r-lg);
+  padding:28px 20px;text-align:center;cursor:pointer;
+  transition:all 0.2s;position:relative;margin-bottom:14px;
+}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:var(--blue-dim);}
+.upload-icon{font-size:28px;margin-bottom:8px;}
+.upload-zone h3{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.upload-zone p{font-size:12.5px;color:var(--text3);}
+.ft-badges{display:flex;justify-content:center;gap:6px;margin-top:10px;}
+.ft-b{font-size:11px;padding:2px 8px;background:var(--dark4);border-radius:4px;color:var(--text3);}
+.file-queue{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.file-item{
+  display:flex;align-items:center;gap:10px;
+  background:var(--dark3);border:1px solid var(--border);
+  border-radius:8px;padding:9px 12px;
+}
+.file-thumb{
+  width:36px;height:36px;border-radius:6px;
+  background:var(--dark4);display:flex;align-items:center;justify-content:center;
+  overflow:hidden;flex-shrink:0;
+}
+.file-thumb img{width:100%;height:100%;object-fit:cover;}
+.file-info{flex:1;min-width:0;}
+.file-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.file-size{font-size:11px;color:var(--text3);}
+.file-badge{font-size:10.5px;padding:2px 7px;border-radius:4px;font-weight:600;flex-shrink:0;}
+.fb-pending{background:var(--dark4);color:var(--text3);}
+.fb-loading{background:var(--blue-dim);color:var(--blue2);}
+.fb-done{background:var(--green-dim);color:var(--green);}
+.fb-error{background:var(--red-dim);color:var(--red);}
+.file-remove{background:none;border:none;color:var(--text3);cursor:pointer;padding:3px;border-radius:4px;font-size:14px;line-height:1;transition:color 0.15s;flex-shrink:0;}
+.file-remove:hover{color:var(--red);}
+.mode-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.mode-btn{
+  background:var(--dark3);border:2px solid var(--border);
+  border-radius:var(--r);padding:13px;
+  cursor:pointer;text-align:center;transition:all 0.2s;
+}
+.mode-btn:hover{border-color:var(--border2);}
+.mode-btn.active{border-color:var(--blue);background:var(--blue-dim);}
+.mode-btn .mi{font-size:20px;margin-bottom:7px;}
+.mode-btn .mn{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.mode-btn .md{font-size:11px;color:var(--text3);}
+.range-row{display:flex;align-items:center;gap:10px;}
+.range-inp{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--dark4);cursor:pointer;}
+.range-inp::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--blue);cursor:pointer;box-shadow:0 0 6px var(--blue-glow);}
+.range-val{min-width:34px;text-align:center;font-size:13px;font-weight:600;color:var(--blue2);background:var(--blue-dim);border-radius:5px;padding:2px 7px;}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-row label:first-child{font-size:13.5px;color:var(--text2);}
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-sl{position:absolute;inset:0;background:var(--dark4);border-radius:20px;cursor:pointer;transition:all 0.2s;border:1px solid var(--border2);}
+.toggle-sl::after{content:'';position:absolute;left:2px;top:2px;width:14px;height:14px;border-radius:50%;background:var(--text3);transition:all 0.2s;}
+.toggle input:checked ~ .toggle-sl{background:var(--blue);border-color:var(--blue);}
+.toggle input:checked ~ .toggle-sl::after{transform:translateX(16px);background:#fff;}
+.progress-wrap{margin:10px 0;display:none;}
+.progress-wrap.show{display:block;}
+.progress-track{height:3px;background:var(--dark4);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--blue);border-radius:2px;transition:width 0.4s ease;width:0%;}
+.progress-lbl{font-size:11.5px;color:var(--text3);margin-top:5px;}
+/* Results panel */
+.results-panel{background:var(--dark2);border:1px solid var(--border);border-radius:var(--r-lg);min-height:400px;overflow:hidden;}
+.res-tabs{display:flex;gap:2px;background:var(--dark3);padding:10px 14px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.res-tab{
+  padding:7px 14px;border-radius:7px 7px 0 0;font-size:13px;font-weight:500;
+  cursor:pointer;color:var(--text2);transition:all 0.15s;
+  border:1px solid transparent;background:transparent;
+}
+.res-tab:hover{color:var(--text);}
+.res-tab.active{background:var(--dark2);color:var(--text);border-color:var(--border) var(--border) transparent;}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3);}
+.es-icon{font-size:36px;margin-bottom:12px;opacity:0.4;}
+.es-title{font-size:15px;font-weight:600;color:var(--text2);margin-bottom:6px;}
+.es-sub{font-size:13px;}
+.out-section{background:var(--dark3);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;}
+.out-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.out-section-title{font-size:13px;font-weight:700;color:var(--text);}
+.out-text{font-size:14px;color:var(--text);line-height:1.7;word-break:break-word;}
+.kw-wrap{display:flex;flex-wrap:wrap;gap:6px;}
+.kw-chip{background:var(--dark4);border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:12px;color:var(--text2);transition:all 0.15s;cursor:default;}
+.kw-chip:hover{border-color:var(--blue);color:var(--blue2);background:var(--blue-dim);}
+.rec-prompt{background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:var(--r);padding:14px;margin-bottom:12px;}
+.rec-lbl{font-size:11px;font-weight:700;color:var(--amber);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.rec-text{font-size:13px;color:var(--text);line-height:1.8;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   LIVE CHAT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.chat-shell{
+  display:flex;flex-direction:column;
+  height:calc(100vh - 130px);
+  max-height:780px;
+  background:var(--dark2);
+  border:1px solid var(--border);
+  border-radius:var(--r-xl);
+  overflow:hidden;
+}
+.chat-msgs{
+  flex:1;overflow-y:auto;
+  padding:20px;
+  display:flex;flex-direction:column;gap:14px;
+}
+.msg{display:flex;gap:10px;animation:fadeUp 0.2s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.msg.user{flex-direction:row-reverse;}
+.msg-av{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0;margin-top:2px;
+}
+.msg.ai .msg-av{background:var(--blue-dim);color:var(--blue2);border:1px solid var(--border3);}
+.msg.user .msg-av{background:var(--dark4);color:var(--text2);}
+.msg-bub{
+  max-width:72%;padding:11px 15px;
+  border-radius:12px;font-size:14px;line-height:1.65;
+}
+.msg.ai .msg-bub{background:var(--dark3);color:var(--text);border:1px solid var(--border);border-top-left-radius:3px;}
+.msg.user .msg-bub{background:var(--blue);color:#fff;border-top-right-radius:3px;}
+.msg-bub p{margin-bottom:7px;}
+.msg-bub p:last-child{margin-bottom:0;}
+.msg-bub ul{padding-left:16px;margin:5px 0;}
+.msg-bub li{margin-bottom:4px;}
+.msg-bub strong{font-weight:700;}
+.chat-quickbtns{
+  display:flex;gap:7px;flex-wrap:wrap;
+  padding:10px 16px;
+  background:var(--dark3);
+  border-top:1px solid var(--border);
+}
+.qbtn{
+  font-size:12px;padding:5px 12px;
+  background:var(--dark4);border:1px solid var(--border2);
+  border-radius:20px;color:var(--text2);cursor:pointer;
+  transition:all 0.12s;font-family:'Inter',sans-serif;
+}
+.qbtn:hover{border-color:var(--blue);color:var(--blue2);}
+.chat-bottom{
+  padding:12px 14px;
+  background:var(--dark2);
+  border-top:1px solid var(--border);
+  display:flex;gap:9px;align-items:flex-end;
+}
+.chat-inp{
+  flex:1;background:var(--dark3);
+  border:1px solid var(--border2);
+  border-radius:10px;
+  padding:10px 14px;
+  color:var(--text);font-size:14px;
+  font-family:'Inter',sans-serif;
+  resize:none;outline:none;max-height:120px;
+  line-height:1.5;transition:border 0.15s;
+}
+.chat-inp:focus{border-color:var(--blue);}
+.chat-inp::placeholder{color:var(--text3);}
+.chat-send{
+  width:40px;height:40px;
+  background:var(--blue);
+  border:none;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;
+  transition:all 0.15s;font-size:16px;color:#fff;
+}
+.chat-send:hover{background:#2563eb;}
+.chat-send:disabled{background:var(--dark4);cursor:not-allowed;color:var(--text3);}
+.typing-dots{display:flex;gap:4px;align-items:center;padding:6px 0;}
+.typing-dots span{width:7px;height:7px;border-radius:50%;background:var(--text3);}
+.typing-dots span:nth-child(1){animation:bounce 1s 0s infinite;}
+.typing-dots span:nth-child(2){animation:bounce 1s 0.15s infinite;}
+.typing-dots span:nth-child(3){animation:bounce 1s 0.3s infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TOAST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+.toast{
+  background:var(--dark2);border:1px solid var(--border2);
+  border-radius:var(--r);padding:11px 15px;
+  font-size:13px;color:var(--text);
+  display:flex;align-items:center;gap:9px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+  animation:toastIn 0.25s ease;max-width:300px;
+}
+.toast.ok{border-color:rgba(34,197,94,0.3);}
+.toast.err{border-color:rgba(239,68,68,0.3);}
+@keyframes toastIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SETTINGS MODAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);
+  z-index:500;display:none;align-items:center;justify-content:center;
+}
+.modal-bg.open{display:flex;}
+.modal{
+  background:var(--dark2);border:1px solid var(--border2);
+  border-radius:var(--r-xl);padding:28px;
+  width:100%;max-width:440px;
+}
+.modal h3{font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.modal p{font-size:13.5px;color:var(--text2);margin-bottom:20px;}
+.modal-actions{display:flex;gap:9px;margin-top:8px;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESPONSIVE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media(max-width:860px){
+  .tools-grid{grid-template-columns:1fr 1fr;}
+  .meta-layout{grid-template-columns:1fr;}
+  .format-grid{grid-template-columns:1fr 1fr;}
+  .cal-grid{grid-template-columns:1fr 1fr;}
+  .grid2{grid-template-columns:1fr;}
+}
+@media(max-width:560px){
+  .tools-grid{grid-template-columns:1fr;}
+  .cal-grid{grid-template-columns:1fr;}
+  nav{padding:0 16px;}
+  .home-wrap{padding:36px 16px 60px;}
+  .inner-body{padding:20px 16px 60px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     GLOBAL NAV
+════════════════════════════════════════ -->
+<nav>
+  <div class="nav-logo" onclick="goHome()">
+    <div class="nav-logo-icon">✦</div>
+    Saad <span>Stock</span>
+  </div>
+  <div class="nav-right">
+    <div class="nav-key-status">
+      <div class="key-dot" id="keyDot"></div>
+      <span id="keyLabel">No API key</span>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="openSettings()">⚙ Settings</button>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════
+     HOME VIEW
+════════════════════════════════════════ -->
+<div class="view active" id="view-home">
+  <div class="home-wrap">
+
+    <div class="home-hero">
+      <div class="hero-badge"><div class="badge-pulse"></div> Powered by Groq AI</div>
+      <h1 class="home-title">Your complete<br/><span class="hl">Adobe Stock</span> toolkit</h1>
+      <p class="home-sub">AI-powered tools for stock contributors — design intelligence, metadata generation, market research, and expert mentoring in one place.</p>
+    </div>
+
+    <!-- API KEY SETUP -->
+    <div class="api-setup">
+      <div class="api-setup-title">🔑 Enter your Groq API key to get started</div>
+      <div class="api-setup-hint">Free at console.groq.com/keys — stored only in your browser</div>
+      <div class="api-row">
+        <input class="api-inp" type="password" id="homeApiInp" placeholder="gsk_..."/>
+        <button class="btn btn-blue btn-sm" onclick="saveHomeKey()">Save</button>
+      </div>
+      <div class="api-saved" id="apiSavedMsg">✓ API key saved — you're ready to go!</div>
+    </div>
+
+    <div class="tools-label">Choose a tool to get started</div>
+
+    <!-- TOOLS GRID -->
+    <div class="tools-grid">
+
+      <div class="tool-card" onclick="openView('view-intelligence')">
+        <div class="tc-icon">🧠</div>
+        <div class="tc-name">Stock Intelligence <span style="font-size:10px;padding:2px 7px;border-radius:10px;background:var(--green-dim);color:var(--green);font-weight:600;vertical-align:middle;margin-left:4px;">LIVE</span></div>
+        <div class="tc-desc">Real-time web-grounded design suggestions, trend analysis, market gaps, social media insights, and seasonal calendar.</div>
+        <div class="tc-go">Open tool →</div>
+      </div>
+
+      <div class="tool-card" onclick="openView('view-metadata')">
+        <div class="tc-icon">🏷️</div>
+        <div class="tc-name">Metadata Generator <span style="font-size:10px;padding:2px 7px;border-radius:10px;background:var(--blue-dim);color:var(--blue2);font-weight:600;vertical-align:middle;margin-left:4px;">VISION</span></div>
+        <div class="tc-desc">Upload JPG, PNG, or EPS — AI visually analyzes your image, generates metadata + image-to-prompt. Export as TXT or CSV.</div>
+        <div class="tc-go">Open tool →</div>
+      </div>
+
+      <div class="tool-card" onclick="openView('view-prompt')">
+        <div class="tc-icon">🪄</div>
+        <div class="tc-name">AI Prompt Generator</div>
+        <div class="tc-desc">Pick a design concept, choose your file format, and get a ready-to-use AI prompt for Midjourney, DALL·E, Adobe Firefly, and more.</div>
+        <div class="tc-go">Open tool →</div>
+      </div>
+
+      <div class="tool-card" onclick="openView('view-img2prompt')">
+        <div class="tc-icon">🖼️</div>
+        <div class="tc-name">Image → Prompt</div>
+        <div class="tc-desc">Upload any image and get a ready-to-use AI recreation prompt for Midjourney, DALL·E, Adobe Firefly — choose your format and get main + negative prompts.</div>
+        <div class="tc-go">Open tool →</div>
+      </div>
+
+      <div class="tool-card" onclick="openView('view-mentor')">
+        <div class="tc-icon">🎓</div>
+        <div class="tc-name">Stock Mentor</div>
+        <div class="tc-desc">Expert guidance on rejection fixes, keywording strategy, writing better titles, and building a winning Adobe Stock portfolio.</div>
+        <div class="tc-go">Open tool →</div>
+      </div>
+
+      <div class="tool-card" onclick="openView('view-chat')">
+        <div class="tc-icon">💬</div>
+        <div class="tc-name">Live AI Chat</div>
+        <div class="tc-desc">Chat directly with your AI stock mentor. Ask anything about trends, rejections, niches, keywording, or strategy — get instant answers.</div>
+        <div class="tc-go">Open tool →</div>
+      </div>
+
+      <div class="tool-card" onclick="openView('view-calendar')">
+        <div class="tc-icon">📅</div>
+        <div class="tc-name">Event Calendar</div>
+        <div class="tc-desc">Never miss a seasonal opportunity. See upcoming events and get precise upload timing advice so your designs rank when buyers need them.</div>
+        <div class="tc-go">Open tool →</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     STOCK INTELLIGENCE VIEW
+════════════════════════════════════════ -->
+<div class="view" id="view-intelligence">
+  <div class="inner-nav">
+    <div class="inner-nav-left">
+      <button class="btn-back" onclick="goHome()">← Back</button>
+      <div class="inner-nav-title">🧠 Stock Intelligence</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3);">
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;box-shadow:0 0 5px var(--green);"></div>
+        Live web data
+      </div>
+      <button class="btn btn-blue btn-sm" id="intGenBtn" onclick="runIntelligence()">✦ Generate</button>
+    </div>
+  </div>
+  <div class="inner-body">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('int','suggestions',this)">💡 Suggestions</button>
+      <button class="tab-btn" onclick="switchTab('int','trends',this)">📈 Trends</button>
+      <button class="tab-btn" onclick="switchTab('int','gaps',this)">🎯 Market Gaps</button>
+      <button class="tab-btn" onclick="switchTab('int','social',this)">🌐 Social</button>
+    </div>
+
+    <!-- Suggestions Tab -->
+    <div class="tab-pane active" id="int-suggestions">
+      <div class="notice">AI generates 10 fresh design ideas based on today's date, upcoming events, trending topics, and market gaps.</div>
+      <div id="sugOutput"><div class="empty-state"><div class="es-icon">💡</div><div class="es-title">No suggestions yet</div><div class="es-sub">Click Generate above to get today's design ideas</div></div></div>
+    </div>
+
+    <!-- Trends Tab -->
+    <div class="tab-pane" id="int-trends">
+      <div class="notice">Real-time trend analysis translated into stock design opportunities.</div>
+      <div id="trendOutput"><div class="empty-state"><div class="es-icon">📈</div><div class="es-title">No trend data yet</div><div class="es-sub">Click Generate to analyze current trends</div></div></div>
+    </div>
+
+    <!-- Gaps Tab -->
+    <div class="tab-pane" id="int-gaps">
+      <div class="notice">Market gap analysis — high demand niches with low supply on Adobe Stock.</div>
+      <div id="gapOutput"><div class="empty-state"><div class="es-icon">🎯</div><div class="es-title">No gap data yet</div><div class="es-sub">Click Generate to find market gaps</div></div></div>
+    </div>
+
+    <!-- Social Tab -->
+    <div class="tab-pane" id="int-social">
+      <div class="notice">Cross-platform social media trends translated into stock design opportunities.</div>
+      <div id="socialOutput"><div class="empty-state"><div class="es-icon">🌐</div><div class="es-title">No social data yet</div><div class="es-sub">Click Generate to analyze social trends</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     METADATA GENERATOR VIEW
+════════════════════════════════════════ -->
+<div class="view" id="view-metadata">
+  <div class="inner-nav">
+    <div class="inner-nav-left">
+      <button class="btn-back" onclick="goHome()">← Back</button>
+      <div class="inner-nav-title">🏷️ Metadata Generator</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-ghost btn-sm" onclick="metaClearAll()">🗑 Clear</button>
+      <button class="btn btn-blue btn-sm" id="metaGenBtn" onclick="metaGenerate()">✦ Generate</button>
+    </div>
+  </div>
+  <div class="inner-body">
+    <div class="notice" style="margin-bottom:16px;">🖼️ <strong>Vision AI enabled</strong> — AI visually analyzes your uploaded images to generate accurate metadata and an image recreation prompt. Export results as <strong>.txt</strong> or <strong>.csv</strong> (Excel-ready).</div>
+    <div class="meta-layout">
+
+      <!-- Left: Controls -->
+      <div>
+        <!-- Upload -->
+        <div class="card">
+          <div class="card-title">📁 Files <span style="font-size:12px;color:var(--text3);margin-left:auto;" id="metaFileCount">0 files</span></div>
+          <div class="upload-zone" id="metaUploadZone">
+            <input type="file" id="metaFileInput" multiple accept=".jpg,.jpeg,.png,.eps"/>
+            <div class="upload-icon">☁️</div>
+            <h3>Drop files here</h3>
+            <p>or click to browse</p>
+            <div class="ft-badges">
+              <span class="ft-b">JPG</span><span class="ft-b">PNG</span><span class="ft-b">EPS</span>
+            </div>
+          </div>
+          <div class="file-queue" id="metaFileQueue"></div>
+        </div>
+
+        <!-- Mode -->
+        <div class="card">
+          <div class="card-title">⚙️ Mode</div>
+          <div class="mode-toggle">
+            <div class="mode-btn active" id="mmManual" onclick="metaSetMode('manual')">
+              <div class="mi">🎛️</div><div class="mn">Manual</div><div class="md">You set params</div>
+            </div>
+            <div class="mode-btn" id="mmAuto" onclick="metaSetMode('auto')">
+              <div class="mi">🤖</div><div class="mn">AI Auto</div><div class="md">AI decides</div>
+            </div>
+          </div>
+          <div id="metaManualParams">
+            <div style="margin-bottom:14px;">
+              <div class="form-label">Title word count</div>
+              <div class="range-row">
+                <input type="range" class="range-inp" id="metaTitleWords" min="5" max="20" value="10" oninput="document.getElementById('mtwVal').textContent=this.value"/>
+                <span class="range-val" id="mtwVal">10</span>
+              </div>
+            </div>
+            <div>
+              <div class="form-label">Number of keywords</div>
+              <div class="range-row">
+                <input type="range" class="range-inp" id="metaKwCount" min="10" max="100" value="40" step="5" oninput="document.getElementById('mkwVal').textContent=this.value"/>
+                <span class="range-val" id="mkwVal">40</span>
+              </div>
+            </div>
+          </div>
+          <div id="metaAutoParams" style="display:none;">
+            <div style="background:var(--dark3);border-radius:var(--r);padding:14px;text-align:center;">
+              <div style="font-size:22px;margin-bottom:6px;">🤖</div>
+              <p style="font-size:13px;color:var(--text3);">AI will decide optimal title length and keyword count automatically.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Platform & Options -->
+        <div class="card">
+          <div class="card-title">🎯 Platform & Options</div>
+          <div style="margin-bottom:14px;">
+            <div class="form-label">Target platform</div>
+            <select class="form-sel" id="metaPlatform">
+              <option value="freepik">🟠 Freepik</option>
+              <option value="shutterstock">🔴 Shutterstock</option>
+              <option value="adobe">🔵 Adobe Stock</option>
+              <option value="getty">⚫ Getty Images</option>
+            </select>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div class="form-label">Groq Model</div>
+            <select class="form-sel" id="metaModel">
+              <option value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout 17B (Recommended)</option>
+              <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Best quality)</option>
+              <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fastest)</option>
+            </select>
+          </div>
+          <div class="divider"></div>
+          <div class="toggle-row">
+            <label>Include description</label>
+            <label class="toggle"><input type="checkbox" id="metaIncDesc" checked/><span class="toggle-sl"></span></label>
+          </div>
+
+          <div class="toggle-row">
+            <label>Comma-separated keywords</label>
+            <label class="toggle"><input type="checkbox" id="metaKwComma" checked/><span class="toggle-sl"></span></label>
+          </div>
+        </div>
+
+        <!-- Generate bar -->
+        <div class="card" style="padding:16px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <span style="font-size:13.5px;font-weight:600;"><span id="metaGenCount">0</span> files ready</span>
+            <button class="btn btn-blue" id="metaGenBtn2" onclick="metaGenerate()">✦ Generate</button>
+          </div>
+          <div class="progress-wrap" id="metaProgressWrap">
+            <div class="progress-track"><div class="progress-fill" id="metaProgressFill"></div></div>
+            <div class="progress-lbl" id="metaProgressLbl">Generating...</div>
+          </div>
+        </div>
+
+        <div id="metaBulkBtn" style="display:none;">
+          <div style="font-size:12px;color:var(--text3);margin-bottom:8px;font-weight:600;text-align:center;letter-spacing:0.5px;">DOWNLOAD ALL RESULTS</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-green btn-full" onclick="metaBulkExport('txt')">⬇ All as .txt</button>
+            <button class="btn btn-green btn-full" onclick="metaBulkExport('csv')">⬇ All as .csv</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Results -->
+      <div class="results-panel" id="metaResultsPanel">
+        <div class="empty-state" id="metaEmpty">
+          <div class="es-icon">✦</div>
+          <div class="es-title">No results yet</div>
+          <div class="es-sub">Upload files and click Generate</div>
+        </div>
+        <div style="display:none;" id="metaResultsWrap">
+          <div class="res-tabs" id="metaResTabs"></div>
+          <div id="metaResContent" style="padding:16px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     AI PROMPT GENERATOR VIEW
+════════════════════════════════════════ -->
+<div class="view" id="view-prompt">
+  <div class="inner-nav">
+    <div class="inner-nav-left">
+      <button class="btn-back" onclick="goHome()">← Back</button>
+      <div class="inner-nav-title">🪄 AI Prompt Generator</div>
+    </div>
+  </div>
+  <div class="inner-body">
+
+    <!-- Step indicator -->
+    <div class="step-wrap" style="justify-content:center;max-width:400px;margin:0 auto 30px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div class="step-circle s-active" id="sc1">1</div>
+        <div class="step-lbl">Design</div>
+      </div>
+      <div class="step-line" id="sl1"></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div class="step-circle" id="sc2">2</div>
+        <div class="step-lbl">Format</div>
+      </div>
+      <div class="step-line" id="sl2"></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div class="step-circle" id="sc3">3</div>
+        <div class="step-lbl">Prompt</div>
+      </div>
+    </div>
+
+    <!-- Step 1: Pick Design -->
+    <div class="pg-step active" id="pgs1">
+      <div class="card">
+        <div class="card-title">Step 1 — Pick a Design Concept</div>
+        <p style="font-size:13px;color:var(--text3);margin-bottom:16px;">Select from suggestions (generate them in Stock Intelligence first), or type a custom concept.</p>
+        <div id="pgDesignList"><p style="font-size:13.5px;color:var(--text3);padding:12px 0;">No suggestions loaded. Go to Stock Intelligence, generate suggestions, then come back here — they'll appear automatically.</p></div>
+        <div class="divider"></div>
+        <div class="form-label">Or type a custom design concept:</div>
+        <textarea class="form-ta" id="pgCustomText" placeholder="e.g. Minimalist flat icon set for a health and wellness app with soft pastel colors..."></textarea>
+        <div style="margin-top:14px;display:flex;justify-content:flex-end;">
+          <button class="btn btn-blue" onclick="pgNext1()">Continue →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Choose Format -->
+    <div class="pg-step" id="pgs2">
+      <div class="card">
+        <div class="card-title">Step 2 — What type of file are you creating?</div>
+        <p style="font-size:13px;color:var(--text3);">The AI crafts a prompt specifically optimized for your chosen format.</p>
+        <div class="format-grid">
+          <div class="fmt-card" onclick="pgSelectFmt('vector',this)">
+            <div class="fmt-icon">✏️</div><div class="fmt-name">Vector</div>
+            <div class="fmt-desc">AI / EPS / SVG — scalable graphics, icons, flat design</div>
+          </div>
+          <div class="fmt-card" onclick="pgSelectFmt('illustration',this)">
+            <div class="fmt-icon">🎨</div><div class="fmt-name">Illustration</div>
+            <div class="fmt-desc">Digital art, character design, concept art</div>
+          </div>
+          <div class="fmt-card" onclick="pgSelectFmt('jpg',this)">
+            <div class="fmt-icon">📷</div><div class="fmt-name">JPG / Photo</div>
+            <div class="fmt-desc">Photorealistic, lifestyle photography, mockups</div>
+          </div>
+          <div class="fmt-card" onclick="pgSelectFmt('png',this)">
+            <div class="fmt-icon">🖼️</div><div class="fmt-name">PNG</div>
+            <div class="fmt-desc">Transparent background, stickers, cutout elements</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;">
+          <button class="btn btn-ghost" onclick="pgGoStep(1)">← Back</button>
+          <button class="btn btn-blue" id="pgStep2Btn" onclick="pgNext2()" disabled>Generate Prompt →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Result -->
+    <div class="pg-step" id="pgs3">
+      <div id="pgResult"><div class="loading-row"><div class="spinner"></div>Crafting your AI prompt...</div></div>
+      <div style="margin-top:14px;display:flex;gap:10px;">
+        <button class="btn btn-ghost" onclick="pgGoStep(1)">← Start Over</button>
+        <button class="btn btn-ghost" onclick="pgGoStep(2)">← Change Format</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     IMAGE → PROMPT VIEW
+════════════════════════════════════════ -->
+<div class="view" id="view-img2prompt">
+  <div class="inner-nav">
+    <div class="inner-nav-left">
+      <button class="btn-back" onclick="goHome()">← Back</button>
+      <div class="inner-nav-title">🖼️ Image → Prompt Generator</div>
+    </div>
+  </div>
+  <div class="inner-body">
+    <div class="notice">Upload any JPG or PNG image — the AI visually analyzes it and generates a ready-to-use recreation prompt for any AI art tool.</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+
+      <!-- LEFT: Upload + Format -->
+      <div>
+        <div class="card">
+          <div class="card-title">📁 Upload Your Image</div>
+          <div class="upload-zone" id="i2pZone" style="margin-bottom:0;">
+            <input type="file" id="i2pInput" accept=".jpg,.jpeg,.png"/>
+            <div class="upload-icon">🖼️</div>
+            <h3>Drop image here</h3>
+            <p>or click to browse</p>
+            <div class="ft-badges"><span class="ft-b">JPG</span><span class="ft-b">PNG</span></div>
+          </div>
+          <!-- Preview -->
+          <div id="i2pPreview" style="display:none;margin-top:14px;">
+            <img id="i2pPreviewImg" style="width:100%;max-height:280px;object-fit:contain;border-radius:var(--r-lg);border:1px solid var(--border);background:var(--dark3);"/>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+              <span id="i2pFileName" style="font-size:13px;color:var(--text2);"></span>
+              <button class="btn btn-ghost btn-sm" onclick="i2pClear()">✕ Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🎨 Output Format</div>
+          <p style="font-size:13px;color:var(--text3);margin-bottom:14px;">What type of file do you want to create from this image?</p>
+          <div class="format-grid" style="grid-template-columns:1fr 1fr;">
+            <div class="fmt-card" id="i2pfmt-vector" onclick="i2pSetFmt('vector',this)">
+              <div class="fmt-icon">✏️</div><div class="fmt-name">Vector</div>
+              <div class="fmt-desc">AI/EPS/SVG flat design</div>
+            </div>
+            <div class="fmt-card" id="i2pfmt-illustration" onclick="i2pSetFmt('illustration',this)">
+              <div class="fmt-icon">🎨</div><div class="fmt-name">Illustration</div>
+              <div class="fmt-desc">Digital art, concept art</div>
+            </div>
+            <div class="fmt-card" id="i2pfmt-jpg" onclick="i2pSetFmt('jpg',this)">
+              <div class="fmt-icon">📷</div><div class="fmt-name">JPG / Photo</div>
+              <div class="fmt-desc">Photorealistic output</div>
+            </div>
+            <div class="fmt-card" id="i2pfmt-png" onclick="i2pSetFmt('png',this)">
+              <div class="fmt-icon">🖼️</div><div class="fmt-name">PNG</div>
+              <div class="fmt-desc">Transparent background</div>
+            </div>
+          </div>
+          <button class="btn btn-blue btn-full" id="i2pGenBtn" onclick="i2pGenerate()" disabled style="margin-top:4px;">✦ Generate Prompt</button>
+        </div>
+      </div>
+
+      <!-- RIGHT: Result -->
+      <div id="i2pResult">
+        <div class="empty-state" style="background:var(--dark2);border:1px solid var(--border);border-radius:var(--r-xl);">
+          <div class="es-icon">🪄</div>
+          <div class="es-title">No prompt yet</div>
+          <div class="es-sub">Upload an image and choose a format to get started</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     MENTOR VIEW
+════════════════════════════════════════ -->
+<div class="view" id="view-mentor">
+  <div class="inner-nav">
+    <div class="inner-nav-left">
+      <button class="btn-back" onclick="goHome()">← Back</button>
+      <div class="inner-nav-title">🎓 Stock Mentor</div>
+    </div>
+  </div>
+  <div class="inner-body">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('ment','rejections',this)">Rejection Fix</button>
+      <button class="tab-btn" onclick="switchTab('ment','keywords',this)">Keywording</button>
+      <button class="tab-btn" onclick="switchTab('ment','titles',this)">Titles</button>
+      <button class="tab-btn" onclick="switchTab('ment','strategy',this)">Strategy</button>
+    </div>
+
+    <div class="tab-pane active" id="ment-rejections">
+      <div class="card">
+        <div class="card-title">❌ Why Designs Get Rejected & How to Fix Them</div>
+        <div class="mentor-q">Technical Quality Issues</div>
+        <div class="mentor-a">Adobe Stock requires minimum 4MP resolution, sRGB color space, no compression artifacts, and clean vector paths with no open paths. JPEGs must be saved at maximum quality (10–12 in Photoshop).<ul><li>Minimum 4 megapixels for raster files</li><li>Always embed sRGB color profile</li><li>Vectors: no raster effects, no open paths, all fonts outlined</li><li>No watermarks, logos, or signatures anywhere in the file</li></ul></div>
+        <div class="divider"></div>
+        <div class="mentor-q">Poor or Misleading Keywords</div>
+        <div class="mentor-a">Keyword rejection is one of the most common reasons. Use 10–50 relevant keywords. Adobe's AI detects irrelevant or misleading keywords instantly — this results in rejection or shadow-banning.<ul><li>Start with the most specific, descriptive keywords first</li><li>Include subject, style, color, mood, use case, and industry</li><li>Never keyword stuff — it triggers automatic rejection</li><li>Include both singular and plural forms of key terms</li></ul></div>
+        <div class="divider"></div>
+        <div class="mentor-q">Intellectual Property Issues</div>
+        <div class="mentor-a">Recognizable brands, logos, trademarks, identifiable living people (without model release), and copyrighted artwork will always be rejected. Always get model releases for identifiable faces and property releases for private locations.</div>
+        <div class="divider"></div>
+        <div class="mentor-q">Over-Saturated Content</div>
+        <div class="mentor-a">Adobe Stock has millions of generic sunsets, coffee cups, and business handshakes. These get accepted but never downloaded. Use the Market Gaps tool to find underserved niches before creating content.</div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="ment-keywords">
+      <div class="card">
+        <div class="card-title">🏷️ Advanced Keywording Strategy</div>
+        <div class="mentor-q">The Keyword Pyramid Method</div>
+        <div class="mentor-a">Structure keywords in 3 layers:<ul><li><strong>Layer 1 — Core (1–3 words):</strong> The exact subject. "businesswoman", "coffee cup", "geometric pattern"</li><li><strong>Layer 2 — Context (5–10 words):</strong> Style, color, mood, setting. "minimal", "flat design", "blue background", "isolated on white"</li><li><strong>Layer 3 — Use Case (10–20 words):</strong> Where buyers use it. "website banner", "social media post", "marketing material", "presentation slide"</li></ul></div>
+        <div class="divider"></div>
+        <div class="mentor-q">High-Converting Keyword Categories</div>
+        <div class="mentor-a"><ul><li><strong>Season/Holiday:</strong> Christmas, summer, Eid, Diwali, Halloween, Ramadan, Easter</li><li><strong>Design Style:</strong> minimalist, retro, watercolor, 3D render, flat icon, isometric</li><li><strong>File Format:</strong> banner, background, icon set, infographic, template, pattern</li><li><strong>Industry:</strong> healthcare, technology, education, finance, food, real estate</li><li><strong>Emotion/Mood:</strong> happy, professional, peaceful, energetic, success, teamwork</li></ul></div>
+        <div class="divider"></div>
+        <div class="mentor-q">Keywords to Always Avoid</div>
+        <div class="mentor-a">Never use: brand names, celebrity names, overly generic words like "art" or "design" alone, misspellings, or keywords completely unrelated to your image. These either cause rejection or waste your keyword slots.</div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="ment-titles">
+      <div class="card">
+        <div class="card-title">✏️ Writing Titles That Convert</div>
+        <div class="mentor-q">The Perfect Title Formula</div>
+        <div class="mentor-a">Formula: [Main Subject] + [Style/Color] + [Context/Use] + [Format]<br/><br/>Examples:<ul><li>❌ <em>"Beautiful design 2024"</em></li><li>✅ <strong>"Minimalist Blue Business Card Template with Geometric Pattern"</strong></li><li>❌ <em>"Vector illustration"</em></li><li>✅ <strong>"Flat Cartoon Coffee Shop Icons Set for Mobile App UI"</strong></li></ul></div>
+        <div class="divider"></div>
+        <div class="mentor-q">Title Rules</div>
+        <div class="mentor-a"><ul><li>50–200 characters is the ideal length</li><li>Start with the most important word (what buyers actually search for)</li><li>Include style keywords: flat, minimal, watercolor, 3D, cartoon, realistic</li><li>Never use ALL CAPS, excessive punctuation, or emoji in titles</li><li>Never repeat the same word twice in one title</li><li>Capitalize main nouns and adjectives (title case)</li></ul></div>
+        <div class="divider"></div>
+        <div class="mentor-q">Category Selection</div>
+        <div class="mentor-a">Always pick the most specific category available. Wrong categories hurt your visibility. The most niche category often has less competition and more targeted buyers — that's where you want to be.</div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="ment-strategy">
+      <div class="card">
+        <div class="card-title">🚀 Adobe Stock Growth Strategy</div>
+        <div class="mentor-q">Volume + Niche = Success</div>
+        <div class="mentor-a">Two things must work together:<ul><li><strong>Volume:</strong> Upload 3–5 new files per week minimum. Adobe's algorithm rewards active contributors with better visibility.</li><li><strong>Niche focus:</strong> Pick 2–3 specific niches and dominate them. 200 files in one niche beats 200 random files every time.</li></ul></div>
+        <div class="divider"></div>
+        <div class="mentor-q">The 30-Day Upload Rule</div>
+        <div class="mentor-a">Adobe Stock's search takes time to index and rank new files. Upload seasonal content 30–45 days before the event. Christmas designs should be uploaded by November 10 to rank by December. Start early or lose the opportunity.</div>
+        <div class="divider"></div>
+        <div class="mentor-q">Best Formats by Opportunity</div>
+        <div class="mentor-a"><ul><li><strong>Vectors (AI/EPS):</strong> Highest acceptance rate, most versatile for buyers, preferred by designers</li><li><strong>JPEG:</strong> Best for photos and raster artwork with no transparency needed</li><li><strong>PNG:</strong> Great for transparent backgrounds, stickers, UI elements</li><li><strong>Video (MP4/MOV):</strong> Less competition, significantly higher price per download</li></ul></div>
+        <div class="divider"></div>
+        <div class="mentor-q">Track & Improve Weekly</div>
+        <div class="mentor-a">Check your Adobe Stock dashboard every week. Find which files get the best view-to-download ratio. Make more content similar to your top performers. Re-upload files with zero downloads after 90 days with improved titles and keywords.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     LIVE CHAT VIEW
+════════════════════════════════════════ -->
+<div class="view" id="view-chat">
+  <div class="inner-nav">
+    <div class="inner-nav-left">
+      <button class="btn-back" onclick="goHome()">← Back</button>
+      <div class="inner-nav-title">💬 Live AI Chat</div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="clearChat()">Clear chat</button>
+  </div>
+  <div class="inner-body" style="padding-top:16px;">
+    <div class="chat-shell">
+      <div class="chat-msgs" id="chatMsgs">
+        <div class="msg ai">
+          <div class="msg-av">✦</div>
+          <div class="msg-bub">
+            <p>Hi! I'm your Saad Stock AI assistant — a personal Adobe Stock mentor and market analyst.</p>
+            <p>I can help you with design suggestions, trend analysis, rejection reasons, keywording strategy, market gaps, and anything else about succeeding on Adobe Stock.</p>
+            <p>What would you like to know? 🎨</p>
+          </div>
+        </div>
+      </div>
+      <div class="chat-quickbtns" id="chatQuickBtns">
+        <button class="qbtn" onclick="quickChat('What should I design today?')">What to design today?</button>
+        <button class="qbtn" onclick="quickChat('Why was my design rejected?')">Why was I rejected?</button>
+        <button class="qbtn" onclick="quickChat('What are trending niches right now?')">Trending niches</button>
+        <button class="qbtn" onclick="quickChat('How do I write better keywords?')">Better keywords</button>
+        <button class="qbtn" onclick="quickChat('What types of designs sell the most on Adobe Stock?')">What sells most?</button>
+        <button class="qbtn" onclick="quickChat('How many uploads per week should I do?')">Upload frequency?</button>
+      </div>
+      <div class="chat-bottom">
+        <textarea class="chat-inp" id="chatInp" rows="1" placeholder="Ask anything about Adobe Stock..." onkeydown="chatKey(event)" oninput="chatResize(this)"></textarea>
+        <button class="chat-send" id="chatSendBtn" onclick="sendChat()">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     EVENT CALENDAR VIEW
+════════════════════════════════════════ -->
+<div class="view" id="view-calendar">
+  <div class="inner-nav">
+    <div class="inner-nav-left">
+      <button class="btn-back" onclick="goHome()">← Back</button>
+      <div class="inner-nav-title">📅 Event Calendar</div>
+    </div>
+    <button class="btn btn-blue btn-sm" onclick="generateCalendar()">✦ Generate</button>
+  </div>
+  <div class="inner-body">
+    <div class="notice">Events ranked by upload urgency. Start creating 30–45 days before each event for maximum ranking time.</div>
+    <div id="calOutput"><div class="empty-state"><div class="es-icon">📅</div><div class="es-title">No calendar yet</div><div class="es-sub">Click Generate to load upcoming design opportunities</div></div></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     SETTINGS MODAL
+════════════════════════════════════════ -->
+<div class="modal-bg" id="settingsModal" onclick="closeSettingsIfBg(event)">
+  <div class="modal">
+    <h3>⚙️ Settings</h3>
+    <p>Configure your API key and preferences.</p>
+    <div style="margin-bottom:14px;">
+      <div class="form-label">Groq API Key</div>
+      <div style="display:flex;gap:8px;">
+        <input class="form-inp" type="password" id="settingsApiInp" placeholder="gsk_..."/>
+        <button class="btn btn-ghost btn-sm" onclick="toggleSettingsApiVis()">👁</button>
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div class="form-label">Intelligence Model</div>
+      <select class="form-sel" id="settingsModel">
+        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Best quality)</option>
+        <option value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout 17B (Fast)</option>
+        <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fastest)</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-blue" style="flex:1;" onclick="saveSettings()">Save</button>
+      <button class="btn btn-ghost" style="flex:1;" onclick="closeSettings()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+// ── STATE ───────────────────────────────────────────
+const App = {
+  apiKey: '',
+  model: 'llama-3.3-70b-versatile',
+  chatHistory: [],
+  metaFiles: [],
+  metaMode: 'manual',
+  pgDesign: null,
+  pgFormat: null,
+  pgSuggestions: [],
+  intGenerated: false,
+};
+
+// ── INIT ────────────────────────────────────────────
+(function(){
+  App.apiKey = localStorage.getItem('ss_key') || '';
+  App.model  = localStorage.getItem('ss_model') || 'llama-3.3-70b-versatile';
+  if (App.apiKey) {
+    document.getElementById('homeApiInp').value = App.apiKey;
+    document.getElementById('settingsApiInp').value = App.apiKey;
+    updateKeyStatus(true);
+    document.getElementById('apiSavedMsg').classList.add('show');
+  }
+  // Metadata drag & drop
+  const zone = document.getElementById('metaUploadZone');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+  zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag'); metaAddFiles(Array.from(e.dataTransfer.files)); });
+  document.getElementById('metaFileInput').addEventListener('change', e => { metaAddFiles(Array.from(e.target.files)); e.target.value=''; });
+})();
+
+// ── NAVIGATION ──────────────────────────────────────
+function goHome() {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-home').classList.add('active');
+  window.scrollTo(0,0);
+}
+function openView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── API KEY ──────────────────────────────────────────
+function saveHomeKey() {
+  const k = document.getElementById('homeApiInp').value.trim();
+  if (!k) { toast('Please enter your Groq API key','err'); return; }
+  App.apiKey = k;
+  localStorage.setItem('ss_key', k);
+  document.getElementById('settingsApiInp').value = k;
+  document.getElementById('apiSavedMsg').classList.add('show');
+  updateKeyStatus(true);
+  toast('API key saved!','ok');
+}
+function updateKeyStatus(ok) {
+  const dot = document.getElementById('keyDot');
+  const lbl = document.getElementById('keyLabel');
+  dot.className = ok ? 'key-dot ok' : 'key-dot';
+  lbl.textContent = ok ? 'API key ready' : 'No API key';
+}
+
+// ── SETTINGS ────────────────────────────────────────
+function openSettings() {
+  document.getElementById('settingsApiInp').value = App.apiKey;
+  document.getElementById('settingsModel').value = App.model;
+  document.getElementById('settingsModal').classList.add('open');
+}
+function closeSettings() { document.getElementById('settingsModal').classList.remove('open'); }
+function closeSettingsIfBg(e) { if (e.target === document.getElementById('settingsModal')) closeSettings(); }
+function toggleSettingsApiVis() {
+  const i = document.getElementById('settingsApiInp');
+  i.type = i.type === 'password' ? 'text' : 'password';
+}
+function saveSettings() {
+  const k = document.getElementById('settingsApiInp').value.trim();
+  if (k) { App.apiKey = k; localStorage.setItem('ss_key', k); document.getElementById('homeApiInp').value = k; updateKeyStatus(true); }
+  App.model = document.getElementById('settingsModel').value;
+  localStorage.setItem('ss_model', App.model);
+  closeSettings();
+  toast('Settings saved!','ok');
+}
+
+// ── TABS ─────────────────────────────────────────────
+function switchTab(prefix, id, el) {
+  const parent = el.closest('.tabs');
+  parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll(`[id^="${prefix}-"]`).forEach(p => p.classList.remove('active'));
+  document.getElementById(`${prefix}-${id}`).classList.add('active');
+}
+
+// ── GROQ API (plain) ─────────────────────────────────
+async function callGroq(messages, systemPrompt, maxTokens=2500, modelOverride=null) {
+  if (!App.apiKey) throw new Error('No API key. Please add your Groq API key first.');
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${App.apiKey}`},
+    body:JSON.stringify({
+      model: modelOverride || App.model,
+      max_tokens: maxTokens,
+      temperature: 0.7,
+      messages:[{role:'system',content:systemPrompt},...messages]
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(()=>({}));
+    throw new Error(err?.error?.message || `HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
+// ── LIVE WEB SEARCH (real-time data) ─────────────────
+async function liveWebSearch(query) {
+  const encodedQ = encodeURIComponent(query);
+  try {
+    const ddgRes = await fetch(
+      `https://api.duckduckgo.com/?q=${encodedQ}&format=json&no_html=1&skip_disambig=1`,
+      {signal: AbortSignal.timeout(5000)}
+    );
+    if (ddgRes.ok) {
+      const ddg = await ddgRes.json();
+      let results = [];
+      if (ddg.AbstractText) results.push('Summary: ' + ddg.AbstractText);
+      if (ddg.RelatedTopics) {
+        ddg.RelatedTopics.slice(0,8).forEach(t => { if (t.Text) results.push(t.Text); });
+      }
+      if (results.length > 0) return 'Live web search results for "' + query + '":\n' + results.join('\n');
+    }
+  } catch(e) {}
+  const now = new Date();
+  return 'Search query: "' + query + '"\nToday: ' + now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) + '\nProvide your most current knowledge about what is trending and selling on stock platforms right now.';
+}
+
+// ── GROQ + REAL-TIME WEB SEARCH ──────────────────────
+async function callGroqWithSearch(searchQueries, userPrompt, systemPrompt, maxTokens=3000) {
+  // Step 1: Run all searches in parallel
+  const searchResults = await Promise.all(
+    searchQueries.map(q => liveWebSearch(q))
+  );
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  // Step 2: Inject real search results into the prompt
+  const enrichedPrompt = userPrompt + '\n\n=== LIVE WEB SEARCH DATA (fetched right now: ' + dateStr + ') ===\n' + searchResults.map((r,i) => '--- Search ' + (i+1) + ': ' + searchQueries[i] + ' ---\n' + r).join('\n\n') + '\n\nBased on the above REAL search data, answer the request. Prioritize the live search results over your training data.';
+  return callGroq([{role:'user', content: enrichedPrompt}], systemPrompt, maxTokens);
+}
+
+// ── VISION API (image analysis) ───────────────────────
+async function callGroqVision(dataUrl, prompt, systemPrompt) {
+  if (!App.apiKey) throw new Error('No API key.');
+  const visionModel = 'meta-llama/llama-4-scout-17b-16e-instruct';
+  // dataUrl is already "data:image/jpeg;base64,..."
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${App.apiKey}`},
+    body:JSON.stringify({
+      model: visionModel,
+      max_tokens: 2000,
+      temperature: 0.4,
+      messages:[
+        {role:'system', content: systemPrompt},
+        {role:'user', content:[
+          {type:'image_url', image_url:{url: dataUrl}},
+          {type:'text', text: prompt}
+        ]}
+      ]
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(()=>({}));
+    // Vision not supported — fall back to name-based analysis
+    if (res.status === 400 || res.status === 422) {
+      return callGroq([{role:'user',content: prompt}], systemPrompt, 2000);
+    }
+    throw new Error(err?.error?.message || 'Vision API error ' + res.status);
+  }
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
+// ── STOCK INTELLIGENCE ───────────────────────────────
+async function runIntelligence() {
+  if (!App.apiKey) { toast('Please save your Groq API key first','err'); return; }
+  const btn = document.getElementById('intGenBtn');
+  btn.disabled = true; btn.textContent = '⏳ Generating...';
+  try {
+    await Promise.all([genSuggestions(), genTrends(), genGaps(), genSocial()]);
+    App.intGenerated = true;
+    toast('Intelligence generated!','ok');
+  } catch(e) {
+    toast('Error: '+e.message,'err');
+  } finally {
+    btn.disabled = false; btn.textContent = '✦ Generate';
+  }
+}
+
+async function genSuggestions() {
+  const out = document.getElementById('sugOutput');
+  out.innerHTML = '<div class="loading-row"><div class="spinner"></div>🌐 Searching live web for trends...</div>';
+  const now = new Date();
+  const month = now.toLocaleString('en-US',{month:'long'});
+  const dateStr = now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const sys = `You are an expert Adobe Stock market analyst. Use the live search data provided to give REAL, current suggestions. Be specific and actionable. Base suggestions on the actual search results, not guesses.`;
+  const queries = [
+    'Adobe Stock trending categories ' + month + ' 2025',
+    'stock photography what is selling ' + month + ' 2025',
+    'microstock photography popular themes right now',
+    'Adobe Stock contributor tips ' + month + ' 2025'
+  ];
+  const msg = `Today is ${dateStr}. Using the live search data above, generate EXACTLY 10 specific Adobe Stock design suggestions based on what is ACTUALLY trending right now. Return ONLY a JSON array:\n[{"num":1,"title":"specific title","badge":"hot|season|gap|trend|ever|social","description":"2-3 sentences of what to create and why it sells","why":"specific reason based on real current trends","tags":["tag1","tag2","tag3"]}]`;
+  const result = await callGroqWithSearch(queries, msg, sys);
+  try {
+    const suggestions = JSON.parse(result.match(/\[[\s\S]*\]/)[0]);
+    App.pgSuggestions = suggestions;
+    syncPgSuggestions();
+    renderSuggestions(suggestions);
+  } catch(e) {
+    out.innerHTML = `<div class="card"><p style="color:var(--red)">Parse error. Raw response:<br/><small>${escH(result)}</small></p></div>`;
+  }
+}
+
+const badgeMap = {hot:'tag-red',season:'tag-amber',gap:'tag-blue',trend:'tag-blue',ever:'tag-green',social:'tag-amber'};
+const badgeLbl = {hot:'🔥 High Demand',season:'🍂 Seasonal',gap:'🎯 Gap Opp.',trend:'📈 Trending',ever:'♾️ Evergreen',social:'📱 Social'};
+
+function renderSuggestions(suggestions) {
+  const out = document.getElementById('sugOutput');
+  out.innerHTML = suggestions.map(s=>`
+  <div class="sug-card">
+    <div class="sug-top">
+      <span class="sug-num">DESIGN ${String(s.num).padStart(2,'0')}</span>
+      <span class="tag ${badgeMap[s.badge]||'tag-blue'}">${badgeLbl[s.badge]||s.badge}</span>
+    </div>
+    <div class="sug-title">${escH(s.title)}</div>
+    <div class="sug-desc">${escH(s.description)}</div>
+    <div class="sug-why">${escH(s.why)}</div>
+    <div class="sug-tags">${(s.tags||[]).map(t=>`<span class="sug-tag">${escH(t)}</span>`).join('')}</div>
+    <div class="sug-footer">
+      <button class="btn btn-ghost btn-sm" onclick="openPromptWithDesign(${s.num})">🪄 Get AI Prompt →</button>
+    </div>
+  </div>`).join('');
+}
+
+async function genTrends() {
+  const out = document.getElementById('trendOutput');
+  out.innerHTML = '<div class="loading-row"><div class="spinner"></div>🌐 Fetching live trend data...</div>';
+  const now = new Date();
+  const month = now.toLocaleString('en-US',{month:'long'});
+  const yr = now.getFullYear();
+  const sys = `You are an expert stock market trend analyst. Use the live search data to give REAL current market trends. Cite the source for each trend.`;
+  const queries = [
+    'Google Trends visual design ' + month + ' ' + yr,
+    'Adobe Stock popular searches ' + yr,
+    'Reddit microstock photography trending ' + month + ' ' + yr,
+    'stock photo industry trends ' + yr,
+    'design color trends ' + month + ' ' + yr
+  ];
+  const msg = `It is ${now.toLocaleDateString('en-US',{month:'long',year:'numeric'})}. Using the LIVE search data above, analyze current real stock design trends. Return ONLY JSON with NO markdown:\n{"overview":"2-3 sentence market overview based on real data","top_trends":[{"rank":1,"name":"trend","relevance":"why relevant for stock","score":80,"source":"where found"}],"rising_styles":["style1","style2","style3","style4"],"declining_styles":["style1","style2"],"hot_colors":["color1","color2","color3"],"opportunity":"key real opportunity right now"}\nInclude 8 real trends from the search data.`;
+  const result = await callGroqWithSearch(queries, msg, sys);
+  try {
+    const data = JSON.parse(result.match(/\{[\s\S]*\}/)[0]);
+    out.innerHTML = `
+    <div class="card">
+      <div class="card-title">📊 Market Overview</div>
+      <p style="font-size:14px;color:var(--text2);line-height:1.7;">${escH(data.overview)}</p>
+      <div style="margin-top:12px;padding:12px;background:var(--blue-dim);border:1px solid rgba(59,130,246,0.2);border-radius:8px;font-size:13px;color:var(--blue2);">💡 ${escH(data.opportunity)}</div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">🔥 Top Trending Topics</div>
+        ${data.top_trends.map(t=>`<div class="trend-row">
+          <div class="trend-rank">${t.rank}</div>
+          <div class="trend-info"><div class="trend-name">${escH(t.name)}</div><div class="trend-meta">${escH(t.relevance)} · ${escH(t.source)}</div></div>
+          <div class="trend-bar-wrap"><div class="trend-bar" style="width:${t.score||70}%"></div></div>
+        </div>`).join('')}
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">⬆️ Rising Styles</div>
+          <div style="display:flex;flex-wrap:wrap;gap:7px;">${data.rising_styles.map(s=>`<span class="tag tag-green">↑ ${escH(s)}</span>`).join('')}</div>
+        </div>
+        <div class="card" style="margin-bottom:14px;">
+          <div class="card-title">⬇️ Declining Styles</div>
+          <div style="display:flex;flex-wrap:wrap;gap:7px;">${data.declining_styles.map(s=>`<span class="tag tag-red">↓ ${escH(s)}</span>`).join('')}</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🎨 Hot Colors</div>
+          <div style="display:flex;flex-wrap:wrap;gap:7px;">${data.hot_colors.map(c=>`<span class="pill">🎨 ${escH(c)}</span>`).join('')}</div>
+        </div>
+      </div>
+    </div>`;
+  } catch(e) {
+    out.innerHTML = `<div class="card"><div style="white-space:pre-wrap;font-size:13px;color:var(--text2)">${escH(result)}</div></div>`;
+  }
+}
+
+async function genGaps() {
+  const out = document.getElementById('gapOutput');
+  out.innerHTML = '<div class="loading-row"><div class="spinner"></div>🌐 Searching Adobe Stock public pages for gaps...</div>';
+  const now = new Date();
+  const month = now.toLocaleString('en-US',{month:'long'});
+  const yr = now.getFullYear();
+  const sys = `You are an Adobe Stock market researcher. Use the live search data — including Adobe Stock public pages and contributor forums — to identify REAL underserved niches right now.`;
+  const queries = [
+    'site:stock.adobe.com trending searches ' + yr,
+    'Adobe Stock what buyers are searching for ' + month + ' ' + yr,
+    'microstock photography underserved niches ' + yr,
+    'Reddit AdobeStock what sells well ' + yr,
+    'stock photography gaps high demand low supply ' + yr,
+    'professional stock contributor tips niches ' + month + ' ' + yr
+  ];
+  const msg = `It is ${now.toLocaleDateString('en-US',{month:'long',year:'numeric'})}. Using the LIVE search data above (including real Adobe Stock public data and contributor discussions), find real market gaps. Return ONLY JSON with NO markdown:\n{"summary":"brief summary based on real data","gaps":[{"niche":"name","demand":"High|Very High","supply":"Low|Very Low","score":"hot|mid|low","description":"what is missing and exactly what to create","examples":["ex1","ex2","ex3"]}],"quick_wins":["win1","win2","win3","win4","win5"]}\nInclude 8 gaps. Base ALL gaps on the real search data provided above.`;
+  const result = await callGroqWithSearch(queries, msg, sys);
+  try {
+    const data = JSON.parse(result.match(/\{[\s\S]*\}/)[0]);
+    const scoreMap = {hot:'gs-hot 🔥 Hot Gap',mid:'gs-mid ⚡ Medium',low:'gs-low ✓ Covered'};
+    out.innerHTML = `
+    <div class="card" style="margin-bottom:14px;">
+      <div class="card-title">📊 Gap Analysis</div>
+      <p style="font-size:14px;color:var(--text2);">${escH(data.summary)}</p>
+    </div>
+    <div class="grid2">
+      <div>
+        ${data.gaps.map(g=>{
+          const sc = scoreMap[g.score]||scoreMap['mid'];
+          const cls = sc.split(' ')[0], lbl = sc.split(' ').slice(1).join(' ');
+          return `<div class="gap-item">
+            <div class="gap-head"><div class="gap-name">${escH(g.niche)}</div><div class="gap-score ${cls}">${lbl}</div></div>
+            <div class="gap-desc">${escH(g.description)}</div>
+            <div class="gap-examples">${(g.examples||[]).map(ex=>`<span class="sug-tag">${escH(ex)}</span>`).join('')}</div>
+            <div style="margin-top:6px;font-size:11.5px;color:var(--text3);">Demand: ${escH(g.demand)} · Supply: ${escH(g.supply)}</div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="card" style="height:fit-content;position:sticky;top:80px;">
+        <div class="card-title">⚡ Quick Wins</div>
+        <p style="font-size:12px;color:var(--text3);margin-bottom:12px;">Start with these for fastest results:</p>
+        ${data.quick_wins.map((w,i)=>`<div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);align-items:flex-start;">
+          <div style="width:22px;height:22px;border-radius:50%;background:var(--blue-dim);color:var(--blue2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${i+1}</div>
+          <div style="font-size:13px;color:var(--text2);">${escH(w)}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  } catch(e) {
+    out.innerHTML = `<div class="card"><div style="white-space:pre-wrap;font-size:13px;color:var(--text2)">${escH(result)}</div></div>`;
+  }
+}
+
+async function genSocial() {
+  const out = document.getElementById('socialOutput');
+  out.innerHTML = '<div class="loading-row"><div class="spinner"></div>🌐 Fetching live social media trends...</div>';
+  const now = new Date();
+  const month = now.toLocaleString('en-US',{month:'long'});
+  const yr = now.getFullYear();
+  const sys = `You are a social media trend analyst. Use the live search data to report REAL current trends from each platform right now.`;
+  const queries = [
+    'Instagram trending aesthetic ' + month + ' ' + yr,
+    'TikTok trending visual content ' + month + ' ' + yr,
+    'Pinterest trending design ideas ' + month + ' ' + yr,
+    'Reddit r/design trending topics ' + month + ' ' + yr,
+    'Twitter trending visual art design ' + month + ' ' + yr,
+    'Facebook trending content creators ' + month + ' ' + yr
+  ];
+  const msg = `It is ${now.toLocaleDateString('en-US',{month:'long',year:'numeric'})}. Using the LIVE social media search data above, report what is ACTUALLY trending on each platform right now and translate to Adobe Stock design opportunities. Return ONLY JSON with NO markdown:\n{"platforms":[{"name":"Instagram","icon":"📸","top_trends":["real trend 1","real trend 2","real trend 3","real trend 4"],"stock_opportunity":"specific actionable design opportunity"}],"cross_platform":["trend appearing everywhere 1","trend 2","trend 3"],"viral_to_stock":[{"viral":"real viral topic","stock":"what to create for stock","demand":"High|Very High"}]}\nInclude: Instagram, TikTok, Twitter/X, Pinterest, Reddit, Facebook. ALL trends must come from the live search data.`;
+  const result = await callGroqWithSearch(queries, msg, sys);
+  try {
+    const data = JSON.parse(result.match(/\{[\s\S]*\}/)[0]);
+    out.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;">
+      ${data.platforms.map(p=>`<div class="social-card">
+        <div class="social-head"><div class="social-icon">${p.icon}</div><div class="social-name">${escH(p.name)}</div></div>
+        ${p.top_trends.map(t=>`<div class="social-item"><div class="si-dot"></div><span>${escH(t)}</span></div>`).join('')}
+        <div class="social-opp">💡 ${escH(p.stock_opportunity)}</div>
+      </div>`).join('')}
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">🌊 Cross-Platform Trends</div>
+        ${data.cross_platform.map(t=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--text2);display:flex;align-items:center;gap:8px;"><span style="color:var(--blue2);">◆</span>${escH(t)}</div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">🎯 Viral → Stock</div>
+        ${data.viral_to_stock.map(v=>`<div style="padding:9px 0;border-bottom:1px solid var(--border);">
+          <div style="font-size:11.5px;color:var(--text3);margin-bottom:2px;">VIRAL: ${escH(v.viral)}</div>
+          <div style="font-size:13px;color:var(--text);">→ ${escH(v.stock)}</div>
+          <span class="tag tag-amber" style="margin-top:4px;display:inline-flex;">${escH(v.demand)} Demand</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  } catch(e) {
+    out.innerHTML = `<div class="card"><div style="white-space:pre-wrap;font-size:13px;color:var(--text2)">${escH(result)}</div></div>`;
+  }
+}
+
+// ── CALENDAR ─────────────────────────────────────────
+async function generateCalendar() {
+  if (!App.apiKey) { toast('Please save your Groq API key first','err'); return; }
+  const out = document.getElementById('calOutput');
+  out.innerHTML = '<div class="loading-row"><div class="spinner"></div>Building event calendar...</div>';
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const month = now.toLocaleString('en-US',{month:'long'});
+  const yr = now.getFullYear();
+  const sys = `You are an expert seasonal design strategist. Use the live search data to give REAL upcoming events and design opportunities.`;
+  const queries = [
+    'upcoming holidays events ' + month + ' ' + yr + ' next 60 days',
+    'Adobe Stock seasonal upload tips ' + month + ' ' + yr,
+    'stock photography seasonal demand ' + month + ' ' + yr
+  ];
+  const msg = `Today is ${dateStr}. Using the LIVE search data above, create a REAL design opportunity calendar for the next 60 days based on actual upcoming events. Return ONLY JSON with NO markdown:\n{"events":[{"date":"Month Day","event":"Event Name","days_away":number,"design_tip":"specific design suggestion based on real event","urgency":"now|soon|plan","categories":["cat1"]}],"monthly_focus":"what to focus on this month based on real events","advance_warning":"what to start creating right now for next month"}\nInclude 12 REAL upcoming events. Urgency: now=under 14 days, soon=15-30, plan=31-60.`;
+  const result = await callGroqWithSearch(queries, msg, sys);
+  try {
+    const data = JSON.parse(result.match(/\{[\s\S]*\}/)[0]);
+    const urgClass = {now:'urg-now',soon:'urg-soon',plan:'urg-plan'};
+    const urgLbl = {now:'⚡ Upload Now',soon:'⏰ Prepare Soon',plan:'📋 Plan Ahead'};
+    const leftColor = {now:'var(--red)',soon:'var(--amber)',plan:'var(--blue2)'};
+    out.innerHTML = `
+    <div class="grid2" style="margin-bottom:16px;">
+      <div class="card" style="border-left:3px solid var(--blue2);">
+        <div class="card-title">📌 This Month's Focus</div>
+        <p style="font-size:13.5px;color:var(--text2);">${escH(data.monthly_focus)}</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--green);">
+        <div class="card-title">🔮 Start Preparing Now</div>
+        <p style="font-size:13.5px;color:var(--text2);">${escH(data.advance_warning)}</p>
+      </div>
+    </div>
+    <div class="cal-grid">
+      ${data.events.map(e=>`<div class="cal-item" style="border-left-color:${leftColor[e.urgency]||'var(--blue2)'};">
+        <div class="cal-date">${escH(e.date)} · ${e.days_away} days</div>
+        <div class="cal-event">${escH(e.event)}</div>
+        <div class="cal-tip">${escH(e.design_tip)}</div>
+        <span class="urg ${urgClass[e.urgency]||'urg-plan'}">${urgLbl[e.urgency]||'📋 Plan'}</span>
+      </div>`).join('')}
+    </div>`;
+    toast('Calendar generated!','ok');
+  } catch(e) {
+    out.innerHTML = `<div class="card"><div style="white-space:pre-wrap;font-size:13px;color:var(--text2)">${escH(result)}</div></div>`;
+  }
+}
+
+// ── METADATA GENERATOR ───────────────────────────────
+function metaSetMode(m) {
+  App.metaMode = m;
+  document.getElementById('mmManual').classList.toggle('active', m==='manual');
+  document.getElementById('mmAuto').classList.toggle('active', m==='auto');
+  document.getElementById('metaManualParams').style.display = m==='manual' ? '' : 'none';
+  document.getElementById('metaAutoParams').style.display = m==='auto' ? '' : 'none';
+}
+
+function metaAddFiles(files) {
+  let added = 0;
+  files.forEach(file => {
+    const isEps = file.name.toLowerCase().endsWith('.eps');
+    const isImg = file.type.startsWith('image/') || isEps;
+    if (!isImg) { toast(`${file.name}: unsupported file type`,'err'); return; }
+    const id = Date.now() + Math.random().toString(36).slice(2);
+    const entry = { id, file, name:file.name, type:isEps?'eps':file.type.includes('png')?'png':'jpg', size:fmtSize(file.size), dataUrl:null, status:'pending', result:null };
+    App.metaFiles.push(entry);
+    added++;
+    const reader = new FileReader();
+    reader.onload = e => { entry.dataUrl = e.target.result; metaRenderQueue(); };
+    if (isEps) reader.readAsText(file); else reader.readAsDataURL(file);
+  });
+  if (added > 0) { metaRenderQueue(); toast(`${added} file${added>1?'s':''} added`,'ok'); }
+}
+
+function fmtSize(b) {
+  if (b<1024) return b+' B';
+  if (b<1048576) return (b/1024).toFixed(1)+' KB';
+  return (b/1048576).toFixed(1)+' MB';
+}
+
+function metaRenderQueue() {
+  const q = document.getElementById('metaFileQueue');
+  document.getElementById('metaFileCount').textContent = `${App.metaFiles.length} file${App.metaFiles.length!==1?'s':''}`;
+  document.getElementById('metaGenCount').textContent = App.metaFiles.length;
+  if (!App.metaFiles.length) { q.innerHTML=''; return; }
+  q.innerHTML = App.metaFiles.map(f=>`
+  <div class="file-item" id="mfi-${f.id}">
+    <div class="file-thumb">${f.type!=='eps'&&f.dataUrl?`<img src="${f.dataUrl}" alt=""/>`:'<span style="font-size:18px;">📐</span>'}</div>
+    <div class="file-info"><div class="file-name" title="${escH(f.name)}">${escH(f.name)}</div><div class="file-size">${f.type.toUpperCase()} · ${f.size}</div></div>
+    <span class="file-badge fb-${f.status}">${{pending:'Pending',loading:'...',done:'Done',error:'Error'}[f.status]||f.status}</span>
+    <button class="file-remove" onclick="metaRemoveFile('${f.id}')" title="Remove">×</button>
+  </div>`).join('');
+}
+
+function metaRemoveFile(id) {
+  App.metaFiles = App.metaFiles.filter(f=>f.id!==id);
+  metaRenderQueue();
+  const tab = document.getElementById('mrt-'+id);
+  const con = document.getElementById('mrc-'+id);
+  if (tab) tab.remove();
+  if (con) con.remove();
+  if (!App.metaFiles.length) metaReset();
+}
+
+function metaClearAll() {
+  App.metaFiles = [];
+  metaRenderQueue();
+  metaReset();
+  toast('Cleared all files','ok');
+}
+
+function metaReset() {
+  document.getElementById('metaEmpty').style.display = '';
+  document.getElementById('metaResultsWrap').style.display = 'none';
+  document.getElementById('metaResTabs').innerHTML = '';
+  document.getElementById('metaResContent').innerHTML = '';
+  document.getElementById('metaBulkBtn').style.display = 'none';
+}
+
+function metaUpdateFileStatus(id, status) {
+  const f = App.metaFiles.find(f=>f.id===id);
+  if (f) f.status = status;
+  const el = document.getElementById('mfi-'+id);
+  if (el) {
+    const badge = el.querySelector('.file-badge');
+    if (badge) { badge.className=`file-badge fb-${status}`; badge.textContent={pending:'Pending',loading:'...',done:'Done',error:'Error'}[status]||status; }
+  }
+}
+
+async function metaGenerate() {
+  if (!App.apiKey) { toast('Please save your Groq API key first','err'); return; }
+  if (!App.metaFiles.length) { toast('Please upload at least one file','err'); return; }
+  const btns = ['metaGenBtn','metaGenBtn2'];
+  btns.forEach(b=>{ const el=document.getElementById(b); if(el){el.disabled=true;el.textContent='⏳ Generating...';} });
+  const prog = document.getElementById('metaProgressWrap');
+  const fill = document.getElementById('metaProgressFill');
+  const lbl = document.getElementById('metaProgressLbl');
+  prog.classList.add('show');
+
+  document.getElementById('metaEmpty').style.display = 'none';
+  document.getElementById('metaResultsWrap').style.display = '';
+
+  let done = 0;
+  for (const f of App.metaFiles) {
+    lbl.textContent = `Processing ${f.name}...`;
+    metaUpdateFileStatus(f.id,'loading');
+    try {
+      const result = await metaCallGroq(f);
+      f.result = result;
+      f.status = 'done';
+      metaUpdateFileStatus(f.id,'done');
+      metaRenderResult(f);
+    } catch(e) {
+      f.status = 'error';
+      metaUpdateFileStatus(f.id,'error');
+      toast(`Error for ${f.name}: ${e.message}`,'err');
+    }
+    done++;
+    fill.style.width = `${Math.round(done/App.metaFiles.length*100)}%`;
+  }
+
+  lbl.textContent = `Done — ${done} file${done!==1?'s':''} processed`;
+  btns.forEach(b=>{ const el=document.getElementById(b); if(el){el.disabled=false;el.textContent='✦ Generate';} });
+  if (App.metaFiles.filter(f=>f.status==='done').length >= 1) document.getElementById('metaBulkBtn').style.display='';
+  toast(`Metadata generated for ${done} file${done!==1?'s':''}!`,'ok');
+}
+
+async function metaCallGroq(fileEntry) {
+  const platform = document.getElementById('metaPlatform').value;
+  const model = document.getElementById('metaModel').value;
+  const incDesc = document.getElementById('metaIncDesc').checked;
+
+  const kwComma = document.getElementById('metaKwComma').checked;
+  const isAuto = App.metaMode === 'auto';
+  const titleWords = document.getElementById('metaTitleWords').value;
+  const kwCount = document.getElementById('metaKwCount').value;
+
+  const platformGuides = {
+    freepik:'Freepik prefers descriptive titles (8-15 words), 7-15 keywords, and a short 1-2 sentence description.',
+    shutterstock:'Shutterstock prefers concise titles (5-10 words) and 50 keywords max, comma-separated.',
+    adobe:'Adobe Stock prefers clear descriptive titles (7-12 words) and up to 50 relevant keywords.',
+    getty:'Getty Images prefers professional titles (6-10 words), minimal keywords (5-20), and detailed descriptions.'
+  };
+
+  const paramInstr = isAuto
+    ? 'Determine optimal title word count and keyword count based on image content and platform best practices.'
+    : `Title must be exactly ${titleWords} words. Generate exactly ${kwCount} keywords.`;
+
+  const sys = `You are an expert stock metadata specialist for ${platform}. ${platformGuides[platform]} ${paramInstr} Return ONLY valid JSON, no markdown, no backticks.`;
+
+  let result;
+
+  if (fileEntry.type !== 'eps' && fileEntry.dataUrl && fileEntry.dataUrl.startsWith('data:')) {
+    // Use vision AI to actually SEE the image
+    const visionSys = `You are an expert stock metadata specialist for ${platform}. Analyze the actual image carefully — its subject, style, colors, mood, composition. ${platformGuides[platform]} ${paramInstr} Return ONLY valid JSON, no markdown.`;
+    const visionPrompt = `Look carefully at this image and generate perfect stock metadata for the ${platform} platform.
+${incDesc?'Include a description.':'Do not include a description.'}
+Keyword format: ${kwComma?'comma-separated string':'array'}
+
+Return ONLY this JSON (no markdown, no backticks):
+{"title":"...","keywords":${kwComma?'"keyword1, keyword2, ..."':'["keyword1","keyword2"]'},"description":"${incDesc?'...':''}","word_count":0,"keyword_count":0}`;
+
+    result = await callGroqVision(fileEntry.dataUrl, visionPrompt, visionSys);
+  } else {
+    // EPS or fallback: text-based analysis
+    const preview = fileEntry.type === 'eps' && typeof fileEntry.dataUrl === 'string' ? fileEntry.dataUrl.slice(0,600) : '';
+    const desc = fileEntry.type === 'eps'
+      ? `EPS vector file named "${fileEntry.name}". EPS content preview: ${preview}`
+      : `Image file named "${fileEntry.name}" (${fileEntry.type.toUpperCase()})`;
+    const userMsg = `Generate stock metadata for: ${desc}
+Platform: ${platform}
+${incDesc?'Include a description.':''}
+${incPrompt && fileEntry.type==='eps'?'Include an AI recreation prompt for Midjourney or Adobe Firefly.':''}
+Keyword format: ${kwComma?'comma-separated string':'array'}
+
+Return ONLY this JSON (no markdown):
+{"title":"...","keywords":${kwComma?'"keyword1, keyword2, ..."':'["keyword1","keyword2"]'},"description":"...","recreation_prompt":"...","word_count":0,"keyword_count":0}`;
+    result = await callGroq([{role:'user',content:userMsg}], sys, 2000, model);
+  }
+
+  const raw = result.match(/\{[\s\S]*\}/)?.[0];
+  if (!raw) throw new Error('No JSON in response. Raw: ' + result.slice(0,200));
+  return JSON.parse(raw);
+}
+
+function metaRenderResult(fileEntry) {
+  const r = fileEntry.result || {};
+  const kwArr = typeof r.keywords === 'string' ? r.keywords.split(',').map(k=>k.trim()).filter(Boolean) : (Array.isArray(r.keywords)?r.keywords:[]);
+  const kwText = kwArr.join(', ');
+
+  // Tabs
+  const tabsEl = document.getElementById('metaResTabs');
+  const conEl  = document.getElementById('metaResContent');
+  let tab = document.getElementById('mrt-'+fileEntry.id);
+  if (!tab) {
+    tab = document.createElement('button');
+    tab.className = 'res-tab';
+    tab.id = 'mrt-'+fileEntry.id;
+    tab.textContent = fileEntry.name.length > 16 ? fileEntry.name.slice(0,16)+'…' : fileEntry.name;
+    tab.onclick = () => metaSwitchTab(fileEntry.id);
+    tabsEl.appendChild(tab);
+  }
+
+  let con = document.getElementById('mrc-'+fileEntry.id);
+  if (!con) { con = document.createElement('div'); con.id='mrc-'+fileEntry.id; conEl.appendChild(con); }
+
+  // Image preview thumb (for non-EPS)
+  const thumbHtml = (fileEntry.type !== 'eps' && fileEntry.dataUrl)
+    ? `<div style="display:flex;align-items:center;gap:14px;background:var(--dark3);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;margin-bottom:14px;">
+        <img src="${fileEntry.dataUrl}" alt="${escH(fileEntry.name)}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid var(--border2);flex-shrink:0;"/>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;">${escH(fileEntry.name)}</div>
+          <div style="font-size:12px;color:var(--text3);">${fileEntry.type.toUpperCase()} · ${fileEntry.size}</div>
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <span class="tag tag-blue">${document.getElementById('metaPlatform').value}</span>
+            <span class="tag tag-green">${kwArr.length} keywords</span>
+          </div>
+        </div>
+      </div>`
+    : `<div style="display:flex;align-items:center;gap:12px;background:var(--dark3);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px;margin-bottom:14px;">
+        <div style="width:80px;height:80px;background:var(--dark4);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;">📐</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;">${escH(fileEntry.name)}</div>
+          <div style="font-size:12px;color:var(--text3);">EPS Vector · ${fileEntry.size}</div>
+        </div>
+      </div>`;
+
+  con.innerHTML = thumbHtml + `
+  <div class="out-section">
+    <div class="out-section-head">
+      <div class="out-section-title">📝 Title <span class="tag tag-blue" style="margin-left:6px;">${countWords(r.title||'')} words</span></div>
+      <button class="btn btn-ghost btn-sm" onclick="copyTxt(${JSON.stringify(r.title||'')})">Copy</button>
+    </div>
+    <div class="out-text">${escH(r.title||'—')}</div>
+  </div>
+  <div class="out-section">
+    <div class="out-section-head">
+      <div class="out-section-title">🏷️ Keywords <span class="tag tag-blue" style="margin-left:6px;">${kwArr.length}</span></div>
+      <button class="btn btn-ghost btn-sm" onclick="copyTxt(${JSON.stringify(kwText)})">Copy</button>
+    </div>
+    <div class="kw-wrap">${kwArr.map(k=>`<span class="kw-chip">${escH(k)}</span>`).join('')}</div>
+  </div>
+  ${r.description?`<div class="out-section">
+    <div class="out-section-head"><div class="out-section-title">📄 Description</div><button class="btn btn-ghost btn-sm" onclick="copyTxt(${JSON.stringify(r.description)})">Copy</button></div>
+    <div class="out-text">${escH(r.description)}</div>
+  </div>`:''}
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--border);">
+    <button class="btn btn-green" onclick="metaDownload('${fileEntry.id}','txt')">⬇ .txt</button>
+    <button class="btn btn-green" onclick="metaDownload('${fileEntry.id}','csv')">⬇ .csv</button>
+    <button class="btn btn-dark" onclick="metaCopyAll('${fileEntry.id}')">📋 Copy all</button>
+  </div>`;
+
+  metaSwitchTab(fileEntry.id);
+}
+
+function metaSwitchTab(id) {
+  document.querySelectorAll('.res-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('#metaResContent > div').forEach(c=>c.style.display='none');
+  const tab = document.getElementById('mrt-'+id);
+  const con = document.getElementById('mrc-'+id);
+  if (tab) tab.classList.add('active');
+  if (con) con.style.display = '';
+}
+
+function metaDownload(id, fmt='txt') {
+  const f = App.metaFiles.find(f=>f.id===id);
+  if (!f||!f.result) { toast('No result to download','err'); return; }
+  const baseName = f.name.replace(/\.[^.]+$/,'');
+  if (fmt === 'csv') {
+    const csvContent = buildMetaCsv([f]);
+    dlFile(csvContent, baseName+'_metadata.csv', 'text/csv');
+  } else {
+    dlFile(buildMetaTxt(f), baseName+'_metadata.txt');
+  }
+}
+
+function metaBulkExport(fmt='txt') {
+  const done = App.metaFiles.filter(f=>f.status==='done');
+  if (!done.length) { toast('No completed results','err'); return; }
+  if (fmt==='csv') {
+    dlFile(buildMetaCsv(done), 'saad_stock_metadata_bulk.csv','text/csv');
+  } else {
+    const combined = done.map(f=>buildMetaTxt(f)).join('\n\n'+'='.repeat(50)+'\n\n');
+    dlFile(combined, 'saad_stock_metadata_bulk.txt');
+  }
+  toast('Downloaded ' + done.length + ' results as .' + fmt,'ok');
+}
+
+function buildMetaCsv(files) {
+  const headers = ['File Name','Platform','Title','Keywords','Description','AI Recreation Prompt','Word Count','Keyword Count','Generated At'];
+  const rows = files.map(f => {
+    const r = f.result || {};
+    const kwArr = typeof r.keywords==='string' ? r.keywords : (Array.isArray(r.keywords)?r.keywords.join(', '):'');
+    const kwText = typeof kwArr === 'string' ? kwArr : kwArr;
+    const platform = (document.getElementById('metaPlatform').value||'').toUpperCase();
+    const csvEsc = v => '"' + String(v||'').replace(/"/g,'""') + '"';
+    return [
+      csvEsc(f.name),
+      csvEsc(platform),
+      csvEsc(r.title||''),
+      csvEsc(kwText),
+      csvEsc(r.description||''),
+      csvEsc(r.img_prompt || r.recreation_prompt || ''),
+      csvEsc(countWords(r.title||'')),
+      csvEsc(typeof kwArr==='string'?kwArr.split(',').filter(k=>k.trim()).length:0),
+      csvEsc(new Date().toLocaleString())
+    ].join(',');
+  });
+  return [headers.map(h=>'"'+h+'"').join(','), ...rows].join('\n');
+}
+
+function buildMetaTxt(f) {
+  const r = f.result||{};
+  const kwArr = typeof r.keywords==='string'?r.keywords.split(',').map(k=>k.trim()).filter(Boolean):(Array.isArray(r.keywords)?r.keywords:[]);
+  const platform = (document.getElementById('metaPlatform').value||'').toUpperCase();
+  const lines = [`SAAD STOCK METADATA — ${f.name}`,`Platform: ${platform}`,`Generated: ${new Date().toLocaleString()}`,'='.repeat(50),'','TITLE:',r.title||'','',`KEYWORDS (${kwArr.length}):`,kwArr.join(', '),''];
+  if (r.description) lines.push('DESCRIPTION:', r.description, '');
+  if (r.recreation_prompt) lines.push('AI RECREATION PROMPT:', r.recreation_prompt, '');
+  return lines.join('\n');
+}
+
+function metaCopyAll(id) {
+  const f = App.metaFiles.find(f=>f.id===id);
+  if (f&&f.result) copyTxt(buildMetaTxt(f));
+}
+
+// ── AI PROMPT GENERATOR ─────────────────────────────
+function syncPgSuggestions() {
+  const list = document.getElementById('pgDesignList');
+  if (!App.pgSuggestions.length) return;
+  list.innerHTML = '<div style="font-size:12px;color:var(--text3);margin-bottom:10px;letter-spacing:0.5px;font-weight:600;">SELECT A SUGGESTION:</div>' +
+    App.pgSuggestions.map(s=>`<div class="design-pick" id="dpick-${s.num}" onclick="pgPickDesign(${s.num},this)">
+      <div class="dp-num">${String(s.num).padStart(2,'0')}</div>
+      <div><div class="dp-title">${escH(s.title)}</div><div class="dp-desc">${escH(s.description)}</div></div>
+    </div>`).join('');
+}
+
+function pgPickDesign(num, el) {
+  document.querySelectorAll('.design-pick').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  App.pgDesign = App.pgSuggestions.find(s=>s.num===num);
+  document.getElementById('pgCustomText').value = '';
+}
+
+function openPromptWithDesign(num) {
+  openView('view-prompt');
+  syncPgSuggestions();
+  pgGoStep(1);
+  App.pgFormat = null;
+  document.querySelectorAll('.fmt-card').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('pgStep2Btn').disabled = true;
+  setTimeout(()=>{
+    const el = document.getElementById('dpick-'+num);
+    if (el) { el.scrollIntoView({behavior:'smooth',block:'nearest'}); pgPickDesign(num,el); }
+  }, 80);
+}
+
+function pgNext1() {
+  const custom = document.getElementById('pgCustomText').value.trim();
+  if (!App.pgDesign && !custom) { toast('Please select a design or type a custom concept','err'); return; }
+  if (custom) { App.pgDesign = {title:custom,description:custom,tags:[],why:''}; document.querySelectorAll('.design-pick').forEach(c=>c.classList.remove('sel')); }
+  pgGoStep(2);
+}
+
+function pgSelectFmt(fmt, el) {
+  document.querySelectorAll('.fmt-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  App.pgFormat = fmt;
+  document.getElementById('pgStep2Btn').disabled = false;
+}
+
+function pgNext2() {
+  if (!App.pgFormat) return;
+  pgGoStep(3);
+  generatePgPrompt();
+}
+
+function pgGoStep(n) {
+  document.querySelectorAll('.pg-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('pgs'+n).classList.add('active');
+  for (let i=1;i<=3;i++) {
+    const c = document.getElementById('sc'+i);
+    c.className = 'step-circle' + (i<n?' s-done':i===n?' s-active':'');
+  }
+  for (let i=1;i<=2;i++) {
+    document.getElementById('sl'+i).className = 'step-line'+(i<n?' done':'');
+  }
+}
+
+async function generatePgPrompt() {
+  if (!App.apiKey) { document.getElementById('pgResult').innerHTML='<div class="card" style="color:var(--red);">Please save your Groq API key first.</div>'; return; }
+  const out = document.getElementById('pgResult');
+  out.innerHTML = '<div class="loading-row"><div class="spinner"></div>Crafting your AI prompt...</div>';
+
+  const fmtData = {
+    vector:{label:'Vector (AI/EPS/SVG)',style:'flat vector illustration, clean geometric shapes, bold outlines, minimal design, scalable graphic, white background',tools:['Recraft.ai','Adobe Firefly','Vectorizer.ai','Adobe Illustrator + AI'],neg:'photography, realistic photo, blurry, gradient mesh, 3D render, noise texture, raster effects',size:'5000×5000px'},
+    illustration:{label:'Illustration (Digital Art)',style:'digital illustration, vibrant colors, professional concept art, detailed artwork',tools:['Midjourney','DALL·E 3','Adobe Firefly','Stable Diffusion'],neg:'blurry, low quality, watermark, text overlay, deformed, ugly',size:'4000×4000px or 3000×4000px'},
+    jpg:{label:'JPG / Photo-realistic',style:'professional stock photography, photorealistic, high resolution, sharp focus, commercial photography, studio lighting',tools:['Midjourney v6','DALL·E 3','Adobe Firefly','Stable Diffusion XL'],neg:'cartoon, illustration, drawing, painting, blurry, watermark, text, logo, anime',size:'6000×4000px, 300dpi'},
+    png:{label:'PNG (Transparent Background)',style:'isolated element, transparent background, no background, clean edges, cutout style',tools:['DALL·E 3','Adobe Firefly','Recraft.ai','Stable Diffusion'],neg:'background, shadow on floor, environment, scene, landscape, solid color background',size:'3000×3000px PNG with alpha channel'}
+  };
+  const fd = fmtData[App.pgFormat];
+  const design = App.pgDesign;
+
+  const sys = `You are an expert AI image prompt engineer specializing in prompts for Adobe Stock contributors. Create highly detailed, commercially optimized prompts. Never hallucinate.`;
+  const msg = `Create a professional AI image generation prompt for Adobe Stock.\nDesign concept: "${design.title}"\nDetails: "${design.description}"\nFile format: ${fd.label}\nStyle requirements: ${fd.style}\n\nReturn ONLY this JSON:\n{"main_prompt":"The complete ready-to-paste prompt (150-250 words). End with: ${fd.style}, Adobe Stock commercial use, high quality, professional.","midjourney":"Optimized Midjourney version with --ar and parameters","negative_prompt":"Comprehensive negative prompt starting with: ${fd.neg}","style_keywords":["k1","k2","k3","k4","k5","k6"],"color_palette":["c1","c2","c3","c4"],"composition_tip":"specific composition advice","stock_tip":"what makes this more likely to be accepted and downloaded","difficulty":"Easy|Medium|Advanced"}`;
+
+  try {
+    const result = await callGroq([{role:'user',content:msg}], sys, 2000);
+    const data = JSON.parse(result.match(/\{[\s\S]*\}/)[0]);
+    const diffColors = {Easy:'tag-green',Medium:'tag-amber',Advanced:'tag-red'};
+
+    out.innerHTML = `
+    <div class="card" style="margin-bottom:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div class="card-title" style="margin-bottom:0;">✨ Your Prompt is Ready</div>
+        <div style="display:flex;gap:7px;">
+          <span class="tag tag-blue">${escH(fd.label)}</span>
+          <span class="tag ${diffColors[data.difficulty]||'tag-amber'}">${escH(data.difficulty||'Medium')}</span>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-box-label">MAIN PROMPT — paste into any AI tool</div>
+        <div class="prompt-box-text" id="pgMainText">${escH(data.main_prompt)}</div>
+        <button class="copy-btn" onclick="copyPgTxt('pgMainText',this)">📋 Copy</button>
+      </div>
+
+      <div class="prompt-box">
+        <div class="prompt-box-label">MIDJOURNEY VERSION</div>
+        <div class="prompt-box-text" id="pgMjText">${escH(data.midjourney)}</div>
+        <button class="copy-btn" onclick="copyPgTxt('pgMjText',this)">📋 Copy</button>
+      </div>
+
+      <div class="prompt-box" style="background:rgba(239,68,68,0.05);border-color:rgba(239,68,68,0.15);">
+        <div class="prompt-box-label" style="color:var(--red);">NEGATIVE PROMPT</div>
+        <div class="prompt-box-text" id="pgNegText" style="color:var(--text2);">${escH(data.negative_prompt)}</div>
+        <button class="copy-btn" onclick="copyPgTxt('pgNegText',this)">📋 Copy</button>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">🎨 Colors & Keywords</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">${(data.color_palette||[]).map(c=>`<span class="pill">🎨 ${escH(c)}</span>`).join('')}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;">${(data.style_keywords||[]).map(k=>`<span class="sug-tag">${escH(k)}</span>`).join('')}</div>
+      </div>
+      <div class="card">
+        <div class="card-title">💡 Tips</div>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:10px;"><strong>Composition:</strong> ${escH(data.composition_tip)}</p>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:12px;"><strong>Stock tip:</strong> ${escH(data.stock_tip)}</p>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:6px;font-weight:600;">RECOMMENDED AI TOOLS</div>
+        <div class="tool-chips">${fd.tools.map(t=>`<span class="tool-chip">${t}</span>`).join('')}</div>
+        <div style="margin-top:10px;font-size:12px;color:var(--text3);"><strong>Recommended size:</strong> ${fd.size}</div>
+      </div>
+    </div>`;
+    toast('Prompt generated!','ok');
+  } catch(e) {
+    out.innerHTML = `<div class="card" style="color:var(--red);">Error: ${escH(e.message)}</div>`;
+  }
+}
+
+function copyPgTxt(id, btn) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent = '✓ Copied!'; btn.style.color='var(--green)'; btn.style.borderColor='var(--green)';
+    setTimeout(()=>{ btn.textContent='📋 Copy'; btn.style.color=''; btn.style.borderColor=''; }, 2000);
+  }).catch(()=>{ toast('Could not copy','err'); });
+}
+
+// ── LIVE CHAT ────────────────────────────────────────
+function chatKey(e) { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } }
+function chatResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
+function quickChat(text) { document.getElementById('chatInp').value=text; sendChat(); }
+
+async function sendChat() {
+  const inp = document.getElementById('chatInp');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  if (!App.apiKey) { toast('Please save your Groq API key first','err'); return; }
+
+  inp.value = ''; inp.style.height='auto';
+  addChatMsg('user', msg);
+  App.chatHistory.push({role:'user',content:msg});
+
+  const sendBtn = document.getElementById('chatSendBtn');
+  sendBtn.disabled = true;
+
+  const typingId = addChatTyping();
+
+  const now = new Date();
+  const dateStr2 = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const sys = `You are Saad Stock AI — an expert Adobe Stock mentor and market strategist with 10+ years of experience. You have deep knowledge of: Adobe Stock submission requirements and rejection reasons, market trends and seasonal design opportunities, high-demand niches, keywording and SEO strategies, technical requirements for all file types, portfolio building, and pricing strategies. Today's date is ${dateStr2}. Be specific, actionable, and encouraging. Use bullet points for lists. Format responses clearly. When you have live search data, use it to give real current answers.`;
+
+  // Detect if question needs real-time data
+  const needsLiveData = /trend|trending|selling|popular|market|right now|today|current|latest|2025|what.s hot/i.test(msg);
+
+  try {
+    const recentHistory = App.chatHistory.slice(-20);
+    let result;
+    if (needsLiveData) {
+      const searchQueries = [
+        'Adobe Stock ' + now.toLocaleString('en-US',{month:'long',year:'numeric'}) + ' trends',
+        msg.slice(0,80) + ' stock photography'
+      ];
+      const enrichedMsg = msg + ' Use the live search data to give a current, accurate answer.';
+      result = await callGroqWithSearch(searchQueries, enrichedMsg, sys, 1500);
+      addChatMsg('ai', '<span style="font-size:11px;color:var(--green);">🌐 Live web data used</span>', true);
+    } else {
+      result = await callGroq(recentHistory, sys, 1500);
+    }
+    removeTyping(typingId);
+    const formatted = fmtChatResp(result);
+    addChatMsg('ai', formatted, true);
+    App.chatHistory.push({role:'assistant',content:result});
+    if (App.chatHistory.length > 40) App.chatHistory = App.chatHistory.slice(-40);
+  } catch(e) {
+    removeTyping(typingId);
+    addChatMsg('ai', `<p style="color:var(--red)">Error: ${escH(e.message)}</p>`, true);
+  }
+  sendBtn.disabled = false;
+}
+
+function fmtChatResp(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^#{1,3} (.*?)$/gm,'<strong>$1</strong>')
+    .replace(/^[\*\-] (.*?)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*?<\/li>\n?)+/gs, m=>`<ul>${m}</ul>`)
+    .replace(/\n\n+/g,'</p><p>')
+    .replace(/\n/g,'<br>');
+}
+
+function addChatMsg(role, content, isHtml) {
+  const msgs = document.getElementById('chatMsgs');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  const av = role==='ai'?'✦':'👤';
+  div.innerHTML = `<div class="msg-av">${av}</div><div class="msg-bub">${isHtml?`<p>${content}</p>`:escH(content)}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addChatTyping() {
+  const msgs = document.getElementById('chatMsgs');
+  const id = 'typing-'+Date.now();
+  const div = document.createElement('div');
+  div.className = 'msg ai'; div.id = id;
+  div.innerHTML = `<div class="msg-av">✦</div><div class="msg-bub"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return id;
+}
+function removeTyping(id) { const el=document.getElementById(id); if(el) el.remove(); }
+function clearChat() {
+  App.chatHistory = [];
+  const msgs = document.getElementById('chatMsgs');
+  msgs.innerHTML = `<div class="msg ai"><div class="msg-av">✦</div><div class="msg-bub"><p>Chat cleared. How can I help you?</p></div></div>`;
+  toast('Chat cleared','ok');
+}
+
+// ── HELPERS ──────────────────────────────────────────
+function countWords(s) { return s.trim().split(/\s+/).filter(Boolean).length; }
+function escH(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function copyTxt(text) {
+  navigator.clipboard.writeText(text)
+    .then(()=>toast('Copied!','ok'))
+    .catch(()=>{ const t=document.createElement('textarea'); t.value=text; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); toast('Copied!','ok'); });
+}
+function dlFile(content, filename, mime='text/plain') {
+  const blob = new Blob([content],{type:mime+';charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=filename; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+function toast(msg, type='ok') {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${type==='ok'?'✓':'⚠'}</span> ${escH(msg)}`;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(16px)'; el.style.transition='all 0.25s'; setTimeout(()=>el.remove(),260); }, 3000);
+}
+
+// ── IMAGE → PROMPT TOOL ──────────────────────────────
+(function(){
+  const zone = document.getElementById('i2pZone');
+  if (!zone) return;
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+  zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag'); i2pHandleFile(e.dataTransfer.files[0]); });
+  document.getElementById('i2pInput').addEventListener('change', e => { if(e.target.files[0]) i2pHandleFile(e.target.files[0]); e.target.value=''; });
+})();
+
+let i2pDataUrl = null;
+let i2pFormat = null;
+let i2pFileName = '';
+
+function i2pHandleFile(file) {
+  if (!file || !file.type.startsWith('image/')) { toast('Please upload a JPG or PNG image','err'); return; }
+  i2pFileName = file.name;
+  const reader = new FileReader();
+  reader.onload = e => {
+    i2pDataUrl = e.target.result;
+    document.getElementById('i2pPreviewImg').src = i2pDataUrl;
+    document.getElementById('i2pFileName').textContent = file.name + ' · ' + fmtSize(file.size);
+    document.getElementById('i2pPreview').style.display = '';
+    document.getElementById('i2pZone').querySelector('input').style.display = 'none';
+    document.getElementById('i2pZone').querySelector('.upload-icon').style.display = 'none';
+    document.getElementById('i2pZone').querySelector('h3').style.display = 'none';
+    document.getElementById('i2pZone').querySelector('p').style.display = 'none';
+    document.getElementById('i2pZone').querySelector('.ft-badges').style.display = 'none';
+    i2pCheckReady();
+  };
+  reader.readAsDataURL(file);
+}
+
+function i2pClear() {
+  i2pDataUrl = null; i2pFileName = '';
+  document.getElementById('i2pPreview').style.display = 'none';
+  const zone = document.getElementById('i2pZone');
+  zone.querySelectorAll('input,h3,p,.ft-badges,.upload-icon').forEach(el => el.style.display = '');
+  document.getElementById('i2pResult').innerHTML = '<div class="empty-state" style="background:var(--dark2);border:1px solid var(--border);border-radius:var(--r-xl);"><div class="es-icon">🪄</div><div class="es-title">No prompt yet</div><div class="es-sub">Upload an image and choose a format to get started</div></div>';
+  i2pCheckReady();
+}
+
+function i2pSetFmt(fmt, el) {
+  document.querySelectorAll('[id^="i2pfmt-"]').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  i2pFormat = fmt;
+  i2pCheckReady();
+}
+
+function i2pCheckReady() {
+  const btn = document.getElementById('i2pGenBtn');
+  if (btn) btn.disabled = !(i2pDataUrl && i2pFormat);
+}
+
+async function i2pGenerate() {
+  if (!App.apiKey) { toast('Please save your Groq API key first','err'); return; }
+  if (!i2pDataUrl || !i2pFormat) return;
+
+  const btn = document.getElementById('i2pGenBtn');
+  btn.disabled = true; btn.textContent = '⏳ Analyzing image...';
+
+  const out = document.getElementById('i2pResult');
+  out.innerHTML = '<div class="loading-row" style="padding:40px 20px;justify-content:center;"><div class="spinner"></div> AI is visually analyzing your image...</div>';
+
+  const fmtData = {
+    vector:  { label:'Vector (AI/EPS/SVG)', style:'flat vector illustration, clean geometric shapes, bold outlines, minimal design, white background, scalable graphic', tools:['Recraft.ai','Adobe Firefly Vector','Vectorizer.ai'], neg:'photography, realistic, blurry, 3D render, noise, raster effects, gradients', size:'5000×5000px' },
+    illustration: { label:'Illustration', style:'digital illustration, vibrant colors, professional artwork, detailed concept art', tools:['Midjourney','DALL·E 3','Adobe Firefly'], neg:'blurry, low quality, watermark, deformed, ugly, text overlay', size:'4000×4000px' },
+    jpg:     { label:'JPG / Photo-realistic', style:'professional stock photography, photorealistic, sharp focus, studio lighting, commercial photography', tools:['Midjourney v6','DALL·E 3','Adobe Firefly'], neg:'cartoon, illustration, blurry, watermark, text, anime, painting', size:'6000×4000px 300dpi' },
+    png:     { label:'PNG (Transparent BG)', style:'isolated element, transparent background, no background, clean edges, cutout style', tools:['DALL·E 3','Adobe Firefly','Recraft.ai'], neg:'background, environment, scene, floor shadow, solid color background', size:'3000×3000px PNG alpha' }
+  };
+  const fd = fmtData[i2pFormat];
+
+  const sys = `You are an expert AI image prompt engineer. Analyze the uploaded image carefully — its subject, colors, composition, style, mood, lighting, and details. Then create a highly detailed prompt that would recreate this exact image in the chosen format. Return ONLY valid JSON, no markdown.`;
+
+  const visionPrompt = `Carefully analyze this image. Then generate a professional AI recreation prompt optimized for ${fd.label} format.
+
+Return ONLY this JSON (no markdown, no backticks):
+{
+  "image_analysis": "Brief description of what you see in the image — subject, style, colors, mood, composition",
+  "main_prompt": "Complete detailed prompt (150-250 words) to recreate this image as ${fd.label}. End with: ${fd.style}, Adobe Stock commercial use, high quality, professional.",
+  "midjourney": "Optimized Midjourney version with --ar ratio and style parameters",
+  "negative_prompt": "Comprehensive negative prompt starting with: ${fd.neg}",
+  "style_keywords": ["keyword1","keyword2","keyword3","keyword4","keyword5","keyword6"],
+  "color_palette": ["dominant color 1","color 2","color 3","color 4"],
+  "composition_tip": "Specific composition advice to recreate this image",
+  "stock_tip": "How to optimize this image for Adobe Stock acceptance and downloads",
+  "difficulty": "Easy|Medium|Advanced"
+}`;
+
+  try {
+    const result = await callGroqVision(i2pDataUrl, visionPrompt, sys);
+    const raw = result.match(/\{[\s\S]*\}/)?.[0];
+    if (!raw) throw new Error('No JSON returned. Raw: ' + result.slice(0,200));
+    const data = JSON.parse(raw);
+    i2pRenderResult(data, fd);
+    toast('Prompt generated!','ok');
+  } catch(e) {
+    out.innerHTML = `<div class="card" style="color:var(--red);">Error: ${escH(e.message)}<br/><small style="color:var(--text3);">Make sure your Groq API key supports vision (Llama 4 Scout model).</small></div>`;
+  }
+  btn.disabled = false; btn.textContent = '✦ Generate Prompt';
+}
+
+function i2pRenderResult(data, fd) {
+  const out = document.getElementById('i2pResult');
+  const diffColors = {Easy:'tag-green',Medium:'tag-amber',Advanced:'tag-red'};
+  const uid = 'i2p' + Date.now();
+
+  out.innerHTML = `
+  <div class="card" style="margin-bottom:14px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div class="card-title" style="margin-bottom:0;">✨ Prompt Ready</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="tag tag-blue">${escH(fd.label)}</span>
+        <span class="tag ${diffColors[data.difficulty]||'tag-amber'}">${escH(data.difficulty||'Medium')}</span>
+      </div>
+    </div>
+
+    <!-- Image Analysis -->
+    <div style="padding:12px;background:var(--dark3);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;">
+      <div style="font-size:10.5px;font-weight:700;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">AI SAW IN YOUR IMAGE</div>
+      <p style="font-size:13.5px;color:var(--text2);line-height:1.65;">${escH(data.image_analysis||'')}</p>
+    </div>
+
+    <!-- Main Prompt -->
+    <div class="prompt-box" style="margin-bottom:10px;">
+      <div class="prompt-box-label">MAIN PROMPT — paste into any AI tool</div>
+      <div class="prompt-box-text" id="${uid}-main">${escH(data.main_prompt||'')}</div>
+      <button class="copy-btn" onclick="i2pCopyBox('${uid}-main',this)">📋 Copy</button>
+    </div>
+
+    <!-- Midjourney -->
+    <div class="prompt-box" style="margin-bottom:10px;">
+      <div class="prompt-box-label">MIDJOURNEY VERSION</div>
+      <div class="prompt-box-text" id="${uid}-mj">${escH(data.midjourney||'')}</div>
+      <button class="copy-btn" onclick="i2pCopyBox('${uid}-mj',this)">📋 Copy</button>
+    </div>
+
+    <!-- Negative -->
+    <div class="prompt-box" style="background:rgba(239,68,68,0.04);border-color:rgba(239,68,68,0.14);margin-bottom:14px;">
+      <div class="prompt-box-label" style="color:var(--red);">NEGATIVE PROMPT</div>
+      <div class="prompt-box-text" id="${uid}-neg" style="color:var(--text2);">${escH(data.negative_prompt||'')}</div>
+      <button class="copy-btn" onclick="i2pCopyBox('${uid}-neg',this)">📋 Copy</button>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">🎨 Colors & Keywords</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+        ${(data.color_palette||[]).map(c=>`<span class="pill">🎨 ${escH(c)}</span>`).join('')}
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;">
+        ${(data.style_keywords||[]).map(k=>`<span class="sug-tag">${escH(k)}</span>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">💡 Tips</div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:8px;"><strong>Composition:</strong> ${escH(data.composition_tip||'')}</p>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:12px;"><strong>Stock tip:</strong> ${escH(data.stock_tip||'')}</p>
+      <div style="font-size:11.5px;color:var(--text3);font-weight:700;margin-bottom:6px;letter-spacing:0.5px;">RECOMMENDED TOOLS</div>
+      <div class="tool-chips">${fd.tools.map(t=>`<span class="tool-chip">${t}</span>`).join('')}</div>
+      <div style="margin-top:10px;font-size:12px;color:var(--text3);"><strong>Size:</strong> ${fd.size}</div>
+    </div>
+  </div>`;
+}
+
+function i2pCopyBox(id, btn) {
+  const text = document.getElementById(id)?.textContent || '';
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied!'; btn.style.color = 'var(--green)'; btn.style.borderColor = 'var(--green)';
+    setTimeout(() => { btn.textContent = '📋 Copy'; btn.style.color = ''; btn.style.borderColor = ''; }, 2000);
+  }).catch(() => toast('Could not copy','err'));
+}
+
+</script>
+</body>
+</html>
